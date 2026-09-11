@@ -13,7 +13,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TABLE IF NOT EXISTS profiles (
+CREATE TABLE IF NOT EXISTS profiles(
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     email TEXT NOT NULL UNIQUE,
     full_name TEXT,
@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+DROP TRIGGER IF EXISTS update_profiles_modtime ON profiles;
 CREATE TRIGGER update_profiles_modtime
     BEFORE UPDATE ON profiles
     FOR EACH ROW
@@ -40,6 +41,7 @@ CREATE TABLE IF NOT EXISTS corridors (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+DROP TRIGGER IF EXISTS update_corridors_modtime ON corridors;
 CREATE TRIGGER update_corridors_modtime
     BEFORE UPDATE ON corridors
     FOR EACH ROW
@@ -60,6 +62,7 @@ CREATE TABLE IF NOT EXISTS assets (
 CREATE INDEX IF NOT EXISTS idx_assets_corridor_id ON assets(corridor_id);
 CREATE INDEX IF NOT EXISTS idx_assets_department ON assets(department);
 
+DROP TRIGGER IF EXISTS update_assets_modtime ON assets;
 CREATE TRIGGER update_assets_modtime
     BEFORE UPDATE ON assets
     FOR EACH ROW
@@ -80,6 +83,7 @@ CREATE TABLE IF NOT EXISTS trains (
 CREATE INDEX IF NOT EXISTS idx_trains_corridor_id ON trains(corridor_id);
 CREATE INDEX IF NOT EXISTS idx_trains_window ON trains(corridor_id, entry_minute, exit_minute);
 
+DROP TRIGGER IF EXISTS update_trains_modtime ON trains;
 CREATE TRIGGER update_trains_modtime
     BEFORE UPDATE ON trains
     FOR EACH ROW
@@ -109,6 +113,7 @@ CREATE INDEX IF NOT EXISTS idx_mbr_department ON maintenance_block_requests(depa
 CREATE INDEX IF NOT EXISTS idx_mbr_status ON maintenance_block_requests(status);
 CREATE INDEX IF NOT EXISTS idx_mbr_urgency ON maintenance_block_requests(urgency);
 
+DROP TRIGGER IF EXISTS update_mbr_modtime ON maintenance_block_requests;
 CREATE TRIGGER update_mbr_modtime
     BEFORE UPDATE ON maintenance_block_requests
     FOR EACH ROW
@@ -132,6 +137,7 @@ CREATE TABLE IF NOT EXISTS block_plans (
 
 CREATE INDEX IF NOT EXISTS idx_block_plans_status ON block_plans(status);
 
+DROP TRIGGER IF EXISTS update_block_plans_modtime ON block_plans;
 CREATE TRIGGER update_block_plans_modtime
     BEFORE UPDATE ON block_plans
     FOR EACH ROW
@@ -157,6 +163,7 @@ CREATE INDEX IF NOT EXISTS idx_plan_items_plan_id ON block_plan_items(plan_id);
 CREATE INDEX IF NOT EXISTS idx_plan_items_request_id ON block_plan_items(request_id);
 CREATE INDEX IF NOT EXISTS idx_plan_items_corridor_time ON block_plan_items(corridor_id, scheduled_start_minute, scheduled_end_minute);
 
+DROP TRIGGER IF EXISTS update_plan_items_modtime ON block_plan_items;
 CREATE TRIGGER update_plan_items_modtime
     BEFORE UPDATE ON block_plan_items
     FOR EACH ROW
@@ -170,50 +177,78 @@ ALTER TABLE maintenance_block_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE block_plans ENABLE ROW LEVEL SECURITY;
 ALTER TABLE block_plan_items ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public profiles are viewable by authenticated users" ON profiles;
 CREATE POLICY "Public profiles are viewable by authenticated users"
     ON profiles FOR SELECT TO authenticated USING (TRUE);
 
+DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
 CREATE POLICY "Users can update own profile"
     ON profiles FOR UPDATE TO authenticated USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Operational corridors viewable by all users" ON corridors;
 CREATE POLICY "Operational corridors viewable by all users"
     ON corridors FOR SELECT TO authenticated, anon USING (TRUE);
 
+DROP POLICY IF EXISTS "Operational assets viewable by all users" ON assets;
 CREATE POLICY "Operational assets viewable by all users"
     ON assets FOR SELECT TO authenticated, anon USING (TRUE);
 
+DROP POLICY IF EXISTS "Operational trains viewable by all users" ON trains;
 CREATE POLICY "Operational trains viewable by all users"
     ON trains FOR SELECT TO authenticated, anon USING (TRUE);
 
+DROP POLICY IF EXISTS "Admin manage corridors" ON corridors;
 CREATE POLICY "Admin manage corridors"
     ON corridors FOR ALL TO authenticated
     USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'controller')));
 
+DROP POLICY IF EXISTS "Admin manage assets" ON assets;
 CREATE POLICY "Admin manage assets"
     ON assets FOR ALL TO authenticated
     USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'controller')));
 
+DROP POLICY IF EXISTS "Admin manage trains" ON trains;
 CREATE POLICY "Admin manage trains"
     ON trains FOR ALL TO authenticated
     USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'controller')));
 
+DROP POLICY IF EXISTS "View block requests" ON maintenance_block_requests;
 CREATE POLICY "View block requests"
     ON maintenance_block_requests FOR SELECT TO authenticated, anon USING (TRUE);
 
+DROP POLICY IF EXISTS "Create block requests" ON maintenance_block_requests;
 CREATE POLICY "Create block requests"
     ON maintenance_block_requests FOR INSERT TO authenticated WITH CHECK (TRUE);
 
+DROP POLICY IF EXISTS "Update block requests" ON maintenance_block_requests;
 CREATE POLICY "Update block requests"
     ON maintenance_block_requests FOR UPDATE TO authenticated USING (TRUE);
 
+DROP POLICY IF EXISTS "View block plans" ON block_plans;
 CREATE POLICY "View block plans"
     ON block_plans FOR SELECT TO authenticated, anon USING (TRUE);
 
+DROP POLICY IF EXISTS "Manage block plans" ON block_plans;
 CREATE POLICY "Manage block plans"
     ON block_plans FOR ALL TO authenticated USING (TRUE);
 
+DROP POLICY IF EXISTS "View plan items" ON block_plan_items;
 CREATE POLICY "View plan items"
     ON block_plan_items FOR SELECT TO authenticated, anon USING (TRUE);
 
+DROP POLICY IF EXISTS "Manage plan items" ON block_plan_items;
 CREATE POLICY "Manage plan items"
     ON block_plan_items FOR ALL TO authenticated USING (TRUE);
+
+-- ====================================================================
+-- PERMISSIONS / ROLE GRANTS (anon, authenticated, service_role)
+-- ====================================================================
+GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL ROUTINES IN SCHEMA public TO anon, authenticated, service_role;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON ROUTINES TO anon, authenticated, service_role;
+

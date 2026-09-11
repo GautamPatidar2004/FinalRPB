@@ -37,6 +37,9 @@ share/python-wheels/
 htmlcov/
 *.log
 
+# Dependencies
+node_modules/
+
 # IDE & OS
 .vscode/
 .idea/
