@@ -1,0 +1,10 @@
+/* Railway Block Planning System — Design System */
+@import './design/base.css';
+@import './design/compat.css';
+@import './design/layout.css';
+@import './design/components.css';
+@import './design/dashboard.css';
+@import './design/operations.css';
+@import './design/planning.css';
+@import './design/review.css';
+@import './design/monitoring.css';

@@ -1,0 +1,243 @@
+/* Assets, Corridors, Maintenance pages share this layout pattern */
+
+/* Shared page wrapper */
+.ops-page {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Page header row */
+.ops-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+}
+
+.ops-header__info { display: flex; flex-direction: column; gap: 4px; }
+
+.ops-header__title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ops-header__title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.ops-header__pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: var(--blue-light);
+  color: var(--blue);
+  border: 1px solid var(--blue-border);
+  border-radius: var(--r-full);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ops-header__desc {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.ops-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Filter bar (search + corridor dropdown) */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-bar__search {
+  flex: 1;
+  min-width: 200px;
+  max-width: 380px;
+  position: relative;
+}
+
+.filter-bar__search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.filter-bar__search input {
+  padding-left: 36px;
+}
+
+.filter-bar__count {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Status filter chips */
+.filter-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  padding: 5px 13px;
+  border-radius: var(--r-full);
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--dur);
+  white-space: nowrap;
+}
+
+.filter-chip:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
+}
+
+.filter-chip.active {
+  background: var(--blue-light);
+  border-color: var(--blue-border);
+  color: var(--blue);
+}
+
+/* Table action cell */
+.table-action-btn {
+  padding: 5px 12px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--dur);
+}
+
+.table-action-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+}
+
+.table-action-btn--blue {
+  background: var(--blue-light);
+  border-color: var(--blue-border);
+  color: var(--blue);
+}
+
+.table-action-btn--blue:hover {
+  background: #dbeafe;
+}
+
+/* Corridor availability bar */
+.avail-bar {
+  height: 10px;
+  background: #f1f5f9;
+  border-radius: var(--r-full);
+  overflow: hidden;
+  position: relative;
+  width: 120px;
+}
+
+.avail-bar__fill {
+  position: absolute;
+  height: 100%;
+  border-radius: var(--r-full);
+  background: var(--emerald);
+}
+
+/* Detail modal sections */
+.detail-section {
+  margin-bottom: 24px;
+}
+
+.detail-section:last-child { margin-bottom: 0; }
+
+.detail-section__title {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.detail-section__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Request status indicator row */
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--r-md);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  font-size: 13px;
+}
+
+.status-row__label { flex: 1; font-weight: 500; color: var(--text-tertiary); }
+.status-row__value { font-weight: 700; color: var(--text-primary); }
+
+/* Priority indicator */
+.priority-critical { color: var(--red); font-weight: 700; }
+.priority-high { color: #c2410c; font-weight: 700; }
+.priority-medium { color: var(--amber); font-weight: 600; }
+.priority-low { color: var(--emerald); font-weight: 600; }
+
+/* Urgency badge in table */
+.urgency-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.urgency-dot--critical { background: var(--red); }
+.urgency-dot--high { background: #f97316; }
+.urgency-dot--medium { background: var(--amber); }
+.urgency-dot--low { background: var(--emerald); }
+
+/* Form section inside create modal */
+.form-section-title {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 16px;
+}

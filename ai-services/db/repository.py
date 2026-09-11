@@ -74,6 +74,160 @@ class RailwayRepository:
                 "updated_at": datetime.now(timezone.utc).isoformat(),
             }
 
+        if not self._local_assets:
+            now = datetime.now(timezone.utc).isoformat()
+            self._local_assets["AST-TRK-101"] = {
+                "asset_id": "AST-TRK-101",
+                "corridor_id": "COR-NDLS-GZB",
+                "department": "Engineering",
+                "start_km": 0.0,
+                "end_km": 15.0,
+                "track_type": "UP",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_assets["AST-OHE-101"] = {
+                "asset_id": "AST-OHE-101",
+                "corridor_id": "COR-NDLS-GZB",
+                "department": "Traction Distribution",
+                "start_km": 0.0,
+                "end_km": 15.0,
+                "track_type": "BOTH",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_assets["AST-SNT-101"] = {
+                "asset_id": "AST-SNT-101",
+                "corridor_id": "COR-NDLS-GZB",
+                "department": "Signalling & Telecom",
+                "start_km": 5.0,
+                "end_km": 10.0,
+                "track_type": "BOTH",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_assets["AST-TRK-201"] = {
+                "asset_id": "AST-TRK-201",
+                "corridor_id": "COR-CSMT-KYN",
+                "department": "Engineering",
+                "start_km": 0.0,
+                "end_km": 20.0,
+                "track_type": "DOWN",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_assets["AST-OHE-201"] = {
+                "asset_id": "AST-OHE-201",
+                "corridor_id": "COR-CSMT-KYN",
+                "department": "Traction Distribution",
+                "start_km": 0.0,
+                "end_km": 25.0,
+                "track_type": "BOTH",
+                "created_at": now,
+                "updated_at": now,
+            }
+
+        if not self._local_trains:
+            now = datetime.now(timezone.utc).isoformat()
+            self._local_trains["TRN-12002-SHATABDI"] = {
+                "train_id": "TRN-12002-SHATABDI",
+                "train_type": "PASSENGER_EXPRESS",
+                "corridor_id": "COR-NDLS-GZB",
+                "entry_minute": 360,
+                "exit_minute": 420,
+                "priority_level": 1,
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_trains["TRN-12424-RAJDHANI"] = {
+                "train_id": "TRN-12424-RAJDHANI",
+                "train_type": "PASSENGER_EXPRESS",
+                "corridor_id": "COR-NDLS-GZB",
+                "entry_minute": 980,
+                "exit_minute": 1040,
+                "priority_level": 1,
+                "created_at": now,
+                "updated_at": now,
+            }
+
+        if not self._local_requests:
+            now = datetime.now(timezone.utc).isoformat()
+            self._local_requests["REQ-ENG-001"] = {
+                "request_id": "REQ-ENG-001",
+                "department": "Engineering",
+                "corridor_id": "COR-NDLS-GZB",
+                "asset_id": "AST-TRK-101",
+                "required_duration_minutes": 120,
+                "earliest_start_minute": 60,
+                "latest_end_minute": 300,
+                "is_traffic_block_required": True,
+                "is_power_block_required": False,
+                "urgency": "CRITICAL",
+                "status": "PENDING",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_requests["REQ-TRD-001"] = {
+                "request_id": "REQ-TRD-001",
+                "department": "Traction Distribution",
+                "corridor_id": "COR-NDLS-GZB",
+                "asset_id": "AST-OHE-101",
+                "required_duration_minutes": 90,
+                "earliest_start_minute": 120,
+                "latest_end_minute": 360,
+                "is_traffic_block_required": True,
+                "is_power_block_required": True,
+                "urgency": "HIGH",
+                "status": "PENDING",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_requests["REQ-SNT-001"] = {
+                "request_id": "REQ-SNT-001",
+                "department": "Signalling & Telecom",
+                "corridor_id": "COR-NDLS-GZB",
+                "asset_id": "AST-SNT-101",
+                "required_duration_minutes": 60,
+                "earliest_start_minute": 480,
+                "latest_end_minute": 720,
+                "is_traffic_block_required": False,
+                "is_power_block_required": False,
+                "urgency": "MEDIUM",
+                "status": "PENDING",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_requests["REQ-ENG-002"] = {
+                "request_id": "REQ-ENG-002",
+                "department": "Engineering",
+                "corridor_id": "COR-CSMT-KYN",
+                "asset_id": "AST-TRK-201",
+                "required_duration_minutes": 150,
+                "earliest_start_minute": 60,
+                "latest_end_minute": 400,
+                "is_traffic_block_required": True,
+                "is_power_block_required": False,
+                "urgency": "HIGH",
+                "status": "PENDING",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_requests["REQ-TRD-002"] = {
+                "request_id": "REQ-TRD-002",
+                "department": "Traction Distribution",
+                "corridor_id": "COR-CSMT-KYN",
+                "asset_id": "AST-OHE-201",
+                "required_duration_minutes": 90,
+                "earliest_start_minute": 180,
+                "latest_end_minute": 450,
+                "is_traffic_block_required": True,
+                "is_power_block_required": True,
+                "urgency": "MEDIUM",
+                "status": "PENDING",
+                "created_at": now,
+                "updated_at": now,
+            }
+
     # ==========================================
     # CORRIDORS CRUD
     # ==========================================
