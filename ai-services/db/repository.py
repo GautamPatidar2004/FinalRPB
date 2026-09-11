@@ -15,22 +15,24 @@ from schemas.railway import (
     RailwayPlanningDataset,
 )
 
-# Centralized Supabase client initialization using typed settings
 supabase_client = None
 if settings.supabase_url and settings.effective_supabase_key:
     try:
         from supabase import create_client
-        supabase_client = create_client(settings.supabase_url, settings.effective_supabase_key)
+        client = create_client(settings.supabase_url, settings.effective_supabase_key)
+        # Test if tables are actually migrated/accessible in Supabase
+        test_res = client.table("corridors").select("corridor_id").limit(1).execute()
+        supabase_client = client
     except Exception as exc:
-        print(f"[Supabase Init Warning] Could not initialize live client: {exc}")
+        print(f"[Database Notice] Supabase tables not migrated or unreachable ({exc}). Falling back to local in-memory operational store.")
         supabase_client = None
 
 
 class RailwayRepository:
     """
     Unified database repository for Railway Block Planning.
-    Directs operations to live Supabase tables when configured,
-    with robust local in-memory fallback for local dev and offline tests.
+    Directs operations to live Supabase tables when configured and accessible,
+    with robust local in-memory fallback for local dev, unmigrated databases, and offline tests.
     """
 
     def __init__(self, client=None):
@@ -543,6 +545,35 @@ class RailwayRepository:
                     it.update(patch)
                     return it
         return None
+
+    def list_plan_items(
+        self,
+        plan_id: Optional[str] = None,
+        corridor_id: Optional[str] = None,
+        asset_id: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        if self.client:
+            q = self.client.table("block_plan_items").select("*")
+            if plan_id:
+                q = q.eq("plan_id", plan_id)
+            if corridor_id:
+                q = q.eq("corridor_id", corridor_id)
+            if asset_id:
+                q = q.eq("asset_id", asset_id)
+            return q.execute().data
+
+        results = []
+        for p_id, items in self._local_plan_items.items():
+            if plan_id and p_id != plan_id:
+                continue
+            for it in items:
+                if corridor_id and it.get("corridor_id") != corridor_id:
+                    continue
+                if asset_id and it.get("asset_id") != asset_id:
+                    continue
+                results.append(it)
+        return results
+
 
     # ==========================================
     # PROFILES CRUD

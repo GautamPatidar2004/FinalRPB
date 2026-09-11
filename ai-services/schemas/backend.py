@@ -342,4 +342,104 @@ class PlanReviewResponse(BaseModel):
     review_history: List[PlanReviewHistoryRecord] = Field(default_factory=list)
 
 
+# ==========================================
+# BACKEND PROMPT 7: DASHBOARD SCHEMAS
+# ==========================================
+class DashboardSummaryResponse(BaseModel):
+    total_requests: int
+    pending_requests: int
+    scheduled_requests: int
+    completed_requests: int
+    overdue_requests: int
+    critical_priority_requests: int
+    high_priority_requests: int
+    total_assets: int
+    assets_unavailable: int
+    total_corridors: int
+    active_corridors: int
+    unavailable_corridors: int
+    total_trains: int
+    total_plans: int
+    draft_plans: int
+    under_review_plans: int
+    approved_plans: int
+    rejected_plans: int
+    feasible_plans: int
+    infeasible_plans: int
+
+
+class DashboardAssetResponse(BaseModel):
+    asset_id: str
+    corridor_id: str
+    department: Department
+    start_km: float
+    end_km: float
+    track_type: TrackType
+    is_active: bool
+    scheduled_blocks_count: int = 0
+    created_at: Optional[str] = None
+
+
+class DashboardCorridorResponse(BaseModel):
+    corridor_id: str
+    name: str
+    length_km: float
+    is_electrified: bool
+    is_active: bool
+    available_start_minute: int
+    available_end_minute: int
+    max_parallel_blocks: int
+    scheduled_blocks_count: int = 0
+    trains_count: int = 0
+    created_at: Optional[str] = None
+
+
+class DashboardPlanItemSummary(BaseModel):
+    plan_id: str
+    title: str
+    status: str
+    is_feasible: bool
+    overall_score: Optional[float] = None
+    selected_strategy: Optional[str] = None
+    created_at: str
+    approved_by: Optional[str] = None
+    approved_at: Optional[str] = None
+    rejection_reason: Optional[str] = None
+    items_count: int = 0
+    violations_count: int = 0
+
+
+class DashboardKpiResponse(BaseModel):
+    requests_scheduled: int
+    requests_unscheduled: int
+    total_scheduled_duration_minutes: int
+    total_conflicts: int
+    feasible_plan_percentage: float
+    average_plan_score: Optional[float] = None
+    critical_requests_scheduled: int
+    overdue_requests_scheduled: int
+    corridor_utilization_pct: float
+    asset_utilization_pct: float
+
+
+class DashboardActivityItem(BaseModel):
+    activity_type: str
+    title: str
+    description: str
+    timestamp: str
+    entity_id: str
+    actor: Optional[str] = None
+
+
+class DashboardAlertItem(BaseModel):
+    alert_type: str
+    severity: str
+    title: str
+    message: str
+    entity_id: str
+    corridor_id: Optional[str] = None
+    created_at: str
+
+
+
 
