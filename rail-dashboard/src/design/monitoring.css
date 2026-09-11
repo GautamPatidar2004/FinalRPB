@@ -1,0 +1,296 @@
+/* Monitoring / AI Insights page */
+
+.monitoring-page {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Telemetry gauges */
+.gauges-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+@media (max-width: 1100px) {
+  .gauges-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .gauges-grid { grid-template-columns: 1fr; }
+}
+
+.gauge-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xl);
+  padding: 20px 22px;
+  box-shadow: var(--shadow-float);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gauge-card__label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.gauge-card__value {
+  font-size: 32px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.gauge-card__progress {
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: var(--r-full);
+  overflow: hidden;
+}
+
+.gauge-card__progress-fill {
+  height: 100%;
+  border-radius: var(--r-full);
+  background: var(--blue);
+  transition: width 400ms var(--ease);
+}
+
+.gauge-card__progress-fill--emerald { background: var(--emerald); }
+.gauge-card__progress-fill--amber { background: #f59e0b; }
+.gauge-card__progress-fill--red { background: var(--red); }
+.gauge-card__progress-fill--purple { background: var(--purple); }
+
+.gauge-card__sub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Corridor status grid */
+.corridor-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .corridor-status-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .corridor-status-grid { grid-template-columns: 1fr; }
+}
+
+.corridor-status-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-xs);
+}
+
+.corridor-status-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.corridor-status-card__name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.corridor-status-card__id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.corridor-status-card__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.corridor-stat {
+  text-align: center;
+}
+
+.corridor-stat__val {
+  font-size: 18px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.corridor-stat__label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-top: 3px;
+}
+
+/* AI insights section */
+.insights-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.insight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  font-size: 13.5px;
+  transition: box-shadow var(--dur);
+}
+
+.insight-item:hover { box-shadow: var(--shadow-sm); }
+
+.insight-item__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.insight-item__icon--blue { background: var(--blue-light); color: var(--blue); }
+.insight-item__icon--emerald { background: var(--emerald-light); color: var(--emerald); }
+.insight-item__icon--amber { background: var(--amber-light); color: var(--amber); }
+.insight-item__icon--purple { background: var(--purple-light); color: var(--purple); }
+
+.insight-item__body { flex: 1; }
+
+.insight-item__title {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.insight-item__desc {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  line-height: 1.55;
+}
+
+/* Operational alerts */
+.ops-alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ops-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--r-lg);
+  border: 1px solid transparent;
+  font-size: 13.5px;
+}
+
+.ops-alert--critical {
+  background: rgba(254, 242, 242, 0.7);
+  border-color: var(--red-border);
+  color: #7f1d1d;
+}
+
+.ops-alert--warning {
+  background: rgba(255, 251, 235, 0.7);
+  border-color: var(--amber-border);
+  color: #78350f;
+}
+
+.ops-alert__icon { flex-shrink: 0; margin-top: 1px; }
+
+.ops-alert__body { flex: 1; min-width: 0; }
+
+.ops-alert__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.ops-alert__title { font-weight: 700; }
+
+.ops-alert__corridor {
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.ops-alert__msg {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* Monitoring header */
+.monitoring-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+}
+
+.monitoring-header__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.monitoring-header__title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.monitoring-header__sub {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.monitoring-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.monitoring-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+}
+
+@media (max-width: 1024px) {
+  .monitoring-grid-2 { grid-template-columns: 1fr; }
+}

@@ -1,3 +1,10 @@
+import sys
+from pathlib import Path
+
+SERVICE_DIR = Path(__file__).resolve().parent
+if str(SERVICE_DIR) not in sys.path:
+    sys.path.insert(0, str(SERVICE_DIR))
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -38,10 +45,12 @@ app.include_router(router, prefix="/api/v1")
 
 
 if __name__ == "__main__":
+    is_dev = settings.environment.lower() == "development"
     uvicorn.run(
         "main:app",
         host=settings.host,
         port=settings.port,
-        reload=False,
+        reload=is_dev,
+        reload_dirs=[str(SERVICE_DIR)] if is_dev else None,
         log_level=settings.log_level.lower(),
     )

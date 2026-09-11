@@ -17,6 +17,7 @@ from schemas.backend import (
     PlanReviewAction,
     PlanReviewRequest,
     PlanReviewResponse,
+    Department,
 )
 from schemas.optimization import OptimizedPlanResult
 from planning.engine import PlanningEngine
@@ -31,6 +32,28 @@ plan_optimizer = RailwayPlanOptimizer(
     evaluator=planning_engine.evaluator,
     constraint_engine=planning_engine.constraint_engine,
 )
+
+
+@router.get("/generate", response_model=PlanGenerationResponse)
+def generate_plan_get(
+    corridor_id: Optional[str] = Query(None, description="Filter planning to specific corridor"),
+    department: Optional[Department] = Query(None, description="Filter planning to specific department"),
+    start_minute: Optional[int] = Query(None, ge=0, le=1440, description="Planning window start"),
+    end_minute: Optional[int] = Query(None, ge=0, le=1440, description="Planning window end"),
+    title: Optional[str] = Query(None, description="Optional custom title for the generated plan"),
+):
+    """
+    GET trigger for AI Plan Generation with optional query filters.
+    Enables direct browser / GET requests without conflicting with /{plan_id}.
+    """
+    payload = PlanGenerationRequest(
+        title=title,
+        corridor_id=corridor_id,
+        department=department,
+        start_minute=start_minute,
+        end_minute=end_minute,
+    )
+    return generate_and_persist_plan(payload)
 
 
 @router.post("/generate", response_model=PlanGenerationResponse, status_code=status.HTTP_201_CREATED)

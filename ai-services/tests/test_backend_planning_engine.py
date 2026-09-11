@@ -293,3 +293,14 @@ def test_list_plans_with_filters():
     res_corridor = client.get("/api/v1/plans?corridor_id=COR-NDLS-GZB")
     assert res_corridor.status_code == 200
     assert len(res_corridor.json()) >= 1
+
+
+def test_generate_plan_via_get():
+    """Verify GET /api/v1/plans/generate works and does not 404 via /{plan_id}."""
+    res = client.get("/api/v1/plans/generate?corridor_id=COR-NDLS-GZB")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["plan_id"].startswith("PLAN-")
+    assert data["status"] == "DRAFT"
+    assert "scheduled_blocks" in data
+

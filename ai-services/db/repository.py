@@ -15,22 +15,24 @@ from schemas.railway import (
     RailwayPlanningDataset,
 )
 
-# Centralized Supabase client initialization using typed settings
 supabase_client = None
 if settings.supabase_url and settings.effective_supabase_key:
     try:
         from supabase import create_client
-        supabase_client = create_client(settings.supabase_url, settings.effective_supabase_key)
+        client = create_client(settings.supabase_url, settings.effective_supabase_key)
+        # Test if tables are actually migrated/accessible in Supabase
+        test_res = client.table("corridors").select("corridor_id").limit(1).execute()
+        supabase_client = client
     except Exception as exc:
-        print(f"[Supabase Init Warning] Could not initialize live client: {exc}")
+        print(f"[Database Notice] Supabase tables not migrated or unreachable ({exc}). Falling back to local in-memory operational store.")
         supabase_client = None
 
 
 class RailwayRepository:
     """
     Unified database repository for Railway Block Planning.
-    Directs operations to live Supabase tables when configured,
-    with robust local in-memory fallback for local dev and offline tests.
+    Directs operations to live Supabase tables when configured and accessible,
+    with robust local in-memory fallback for local dev, unmigrated databases, and offline tests.
     """
 
     def __init__(self, client=None):
@@ -70,6 +72,160 @@ class RailwayRepository:
                 "max_parallel_blocks": 2,
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "updated_at": datetime.now(timezone.utc).isoformat(),
+            }
+
+        if not self._local_assets:
+            now = datetime.now(timezone.utc).isoformat()
+            self._local_assets["AST-TRK-101"] = {
+                "asset_id": "AST-TRK-101",
+                "corridor_id": "COR-NDLS-GZB",
+                "department": "Engineering",
+                "start_km": 0.0,
+                "end_km": 15.0,
+                "track_type": "UP",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_assets["AST-OHE-101"] = {
+                "asset_id": "AST-OHE-101",
+                "corridor_id": "COR-NDLS-GZB",
+                "department": "Traction Distribution",
+                "start_km": 0.0,
+                "end_km": 15.0,
+                "track_type": "BOTH",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_assets["AST-SNT-101"] = {
+                "asset_id": "AST-SNT-101",
+                "corridor_id": "COR-NDLS-GZB",
+                "department": "Signalling & Telecom",
+                "start_km": 5.0,
+                "end_km": 10.0,
+                "track_type": "BOTH",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_assets["AST-TRK-201"] = {
+                "asset_id": "AST-TRK-201",
+                "corridor_id": "COR-CSMT-KYN",
+                "department": "Engineering",
+                "start_km": 0.0,
+                "end_km": 20.0,
+                "track_type": "DOWN",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_assets["AST-OHE-201"] = {
+                "asset_id": "AST-OHE-201",
+                "corridor_id": "COR-CSMT-KYN",
+                "department": "Traction Distribution",
+                "start_km": 0.0,
+                "end_km": 25.0,
+                "track_type": "BOTH",
+                "created_at": now,
+                "updated_at": now,
+            }
+
+        if not self._local_trains:
+            now = datetime.now(timezone.utc).isoformat()
+            self._local_trains["TRN-12002-SHATABDI"] = {
+                "train_id": "TRN-12002-SHATABDI",
+                "train_type": "PASSENGER_EXPRESS",
+                "corridor_id": "COR-NDLS-GZB",
+                "entry_minute": 360,
+                "exit_minute": 420,
+                "priority_level": 1,
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_trains["TRN-12424-RAJDHANI"] = {
+                "train_id": "TRN-12424-RAJDHANI",
+                "train_type": "PASSENGER_EXPRESS",
+                "corridor_id": "COR-NDLS-GZB",
+                "entry_minute": 980,
+                "exit_minute": 1040,
+                "priority_level": 1,
+                "created_at": now,
+                "updated_at": now,
+            }
+
+        if not self._local_requests:
+            now = datetime.now(timezone.utc).isoformat()
+            self._local_requests["REQ-ENG-001"] = {
+                "request_id": "REQ-ENG-001",
+                "department": "Engineering",
+                "corridor_id": "COR-NDLS-GZB",
+                "asset_id": "AST-TRK-101",
+                "required_duration_minutes": 120,
+                "earliest_start_minute": 60,
+                "latest_end_minute": 300,
+                "is_traffic_block_required": True,
+                "is_power_block_required": False,
+                "urgency": "CRITICAL",
+                "status": "PENDING",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_requests["REQ-TRD-001"] = {
+                "request_id": "REQ-TRD-001",
+                "department": "Traction Distribution",
+                "corridor_id": "COR-NDLS-GZB",
+                "asset_id": "AST-OHE-101",
+                "required_duration_minutes": 90,
+                "earliest_start_minute": 120,
+                "latest_end_minute": 360,
+                "is_traffic_block_required": True,
+                "is_power_block_required": True,
+                "urgency": "HIGH",
+                "status": "PENDING",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_requests["REQ-SNT-001"] = {
+                "request_id": "REQ-SNT-001",
+                "department": "Signalling & Telecom",
+                "corridor_id": "COR-NDLS-GZB",
+                "asset_id": "AST-SNT-101",
+                "required_duration_minutes": 60,
+                "earliest_start_minute": 480,
+                "latest_end_minute": 720,
+                "is_traffic_block_required": False,
+                "is_power_block_required": False,
+                "urgency": "MEDIUM",
+                "status": "PENDING",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_requests["REQ-ENG-002"] = {
+                "request_id": "REQ-ENG-002",
+                "department": "Engineering",
+                "corridor_id": "COR-CSMT-KYN",
+                "asset_id": "AST-TRK-201",
+                "required_duration_minutes": 150,
+                "earliest_start_minute": 60,
+                "latest_end_minute": 400,
+                "is_traffic_block_required": True,
+                "is_power_block_required": False,
+                "urgency": "HIGH",
+                "status": "PENDING",
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._local_requests["REQ-TRD-002"] = {
+                "request_id": "REQ-TRD-002",
+                "department": "Traction Distribution",
+                "corridor_id": "COR-CSMT-KYN",
+                "asset_id": "AST-OHE-201",
+                "required_duration_minutes": 90,
+                "earliest_start_minute": 180,
+                "latest_end_minute": 450,
+                "is_traffic_block_required": True,
+                "is_power_block_required": True,
+                "urgency": "MEDIUM",
+                "status": "PENDING",
+                "created_at": now,
+                "updated_at": now,
             }
 
     # ==========================================
@@ -543,6 +699,35 @@ class RailwayRepository:
                     it.update(patch)
                     return it
         return None
+
+    def list_plan_items(
+        self,
+        plan_id: Optional[str] = None,
+        corridor_id: Optional[str] = None,
+        asset_id: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        if self.client:
+            q = self.client.table("block_plan_items").select("*")
+            if plan_id:
+                q = q.eq("plan_id", plan_id)
+            if corridor_id:
+                q = q.eq("corridor_id", corridor_id)
+            if asset_id:
+                q = q.eq("asset_id", asset_id)
+            return q.execute().data
+
+        results = []
+        for p_id, items in self._local_plan_items.items():
+            if plan_id and p_id != plan_id:
+                continue
+            for it in items:
+                if corridor_id and it.get("corridor_id") != corridor_id:
+                    continue
+                if asset_id and it.get("asset_id") != asset_id:
+                    continue
+                results.append(it)
+        return results
+
 
     # ==========================================
     # PROFILES CRUD

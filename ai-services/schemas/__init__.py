@@ -85,6 +85,13 @@ __all__ = [
     "PlanReviewRequest",
     "PlanReviewHistoryRecord",
     "PlanReviewResponse",
+    "DashboardSummaryResponse",
+    "DashboardAssetResponse",
+    "DashboardCorridorResponse",
+    "DashboardPlanItemSummary",
+    "DashboardKpiResponse",
+    "DashboardActivityItem",
+    "DashboardAlertItem",
 ]
 
 from .backend import (
@@ -118,4 +125,11 @@ from .backend import (
     PlanReviewRequest,
     PlanReviewHistoryRecord,
     PlanReviewResponse,
+    DashboardSummaryResponse,
+    DashboardAssetResponse,
+    DashboardCorridorResponse,
+    DashboardPlanItemSummary,
+    DashboardKpiResponse,
+    DashboardActivityItem,
+    DashboardAlertItem,
 )
