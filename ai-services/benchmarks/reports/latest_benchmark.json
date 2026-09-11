@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-09-11T18:48:37.521560+00:00",
+  "model_metrics": {
+    "mae": 3.375,
+    "rmse": 4.296,
+    "r2_score": 0.956,
+    "samples_evaluated": 120
+  },
+  "planning_metrics": {
+    "mean_overall_score": 66.49,
+    "feasible_plan_rate_pct": 100.0,
+    "high_priority_coverage_pct": 34.88,
+    "unresolved_requirement_rate_pct": 46.67,
+    "night_shadow_utilization_pct": 57.69,
+    "total_hard_violations": 0
+  },
+  "performance_benchmark": {
+    "total_runtime_seconds": 0.134,
+    "mean_planning_time_ms": 22.04,
+    "datasets_evaluated": 4,
+    "total_requests_processed": 60,
+    "candidates_evaluated_count": 12,
+    "replanning_occurred_count": 4,
+    "successful_plan_generation_rate_pct": 100.0
+  }
+}
