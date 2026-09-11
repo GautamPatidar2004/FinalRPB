@@ -5,7 +5,7 @@ import {
   Layers,
   ArrowRight,
 } from 'lucide-react';
-import { planningService } from '../services';
+import { planningService, operationalService } from '../services';
 import type {
   BlockPlan,
   BlockPlanItem,
@@ -13,6 +13,7 @@ import type {
   PlanValidationResponse,
   PlanConflictResponse,
   ItemStatus,
+  Train,
 } from '../types';
 import {
   Button,
@@ -48,6 +49,7 @@ export const PlanReviewPage: React.FC = () => {
 
   // Selected Plan state (when inspecting a single plan)
   const [selectedPlan, setSelectedPlan] = useState<BlockPlan | null>(navState?.plan || null);
+  const [trains, setTrains] = useState<Train[]>([]);
   const [isLoadingPlan, setIsLoadingPlan] = useState<boolean>(false);
   const [planError, setPlanError] = useState<string | null>(null);
 
@@ -87,16 +89,21 @@ export const PlanReviewPage: React.FC = () => {
     setIsLoadingPlan(true);
     setPlanError(null);
     try {
-      // Concurrently fetch plan details and conflicts
-      const [planRes, conflictsRes] = await Promise.allSettled([
+      // Concurrently fetch plan details, conflicts, and operational trains
+      const [planRes, conflictsRes, trainsRes] = await Promise.allSettled([
         planningService.getPlan(id),
         planningService.getPlanConflicts(id),
+        operationalService.getTrains(),
       ]);
 
       if (planRes.status === 'fulfilled') {
         setSelectedPlan(planRes.value);
       } else {
         throw new Error(planRes.reason?.message || `Failed to retrieve block plan '${id}'.`);
+      }
+
+      if (trainsRes.status === 'fulfilled') {
+        setTrains(trainsRes.value || []);
       }
 
       if (conflictsRes.status === 'fulfilled') {
@@ -270,7 +277,8 @@ export const PlanReviewPage: React.FC = () => {
       loadPlanDetails(routePlanId);
     } else if (navState?.plan) {
       setSelectedPlan(navState.plan);
-      // Also fetch conflicts for it
+      // Also fetch trains and conflicts for it
+      operationalService.getTrains().then(setTrains).catch(() => {});
       planningService
         .getPlanConflicts(navState.plan.plan_id)
         .then((res) => {
@@ -383,6 +391,7 @@ export const PlanReviewPage: React.FC = () => {
         {/* 4. Operational Timeline Visualization */}
         <PlanTimeline
           items={items}
+          trains={trains}
           onSelectBlock={handleSelectBlock}
           selectedBlockId={inspectedBlock?.id || inspectedBlock?.request_id}
         />

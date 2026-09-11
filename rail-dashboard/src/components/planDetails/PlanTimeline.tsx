@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Clock, AlertTriangle } from 'lucide-react';
-import type { BlockPlanItem } from '../../types';
+import type { BlockPlanItem, Train } from '../../types';
 import { formatMinuteToTime, formatDuration } from '../../utils';
 
 export interface PlanTimelineProps {
   items: BlockPlanItem[];
   onSelectBlock: (block: BlockPlanItem) => void;
   selectedBlockId?: string;
+  trains?: Train[];
 }
 
 const deptColors: Record<string, { bg: string; border: string; text: string; lightBg: string }> = {
@@ -46,10 +47,11 @@ export const PlanTimeline: React.FC<PlanTimelineProps> = ({
   items,
   onSelectBlock,
   selectedBlockId,
+  trains = [],
 }) => {
   const [hoveredBlock, setHoveredBlock] = useState<BlockPlanItem | null>(null);
 
-  // Group items by corridor or department for organized timeline rows
+  // Group items by corridor for organized timeline rows
   const groupedByCorridor = items.reduce<Record<string, BlockPlanItem[]>>((acc, item) => {
     const key = item.corridor_id || 'Unassigned Corridor';
     if (!acc[key]) acc[key] = [];
@@ -122,11 +124,15 @@ export const PlanTimeline: React.FC<PlanTimelineProps> = ({
             </div>
 
             {/* Timeline Rows per Corridor */}
-            <div className="space-y-4 pt-3">
+            <div className="space-y-5 pt-3">
               {corridorKeys.map((corridorId) => {
-                const corridorItems = groupedByCorridor[corridorId];
+                const corridorItems = [...groupedByCorridor[corridorId]].sort(
+                  (a, b) => a.scheduled_start_minute - b.scheduled_start_minute
+                );
+                const corridorTrains = trains.filter((t) => t.corridor_id === corridorId);
+
                 return (
-                  <div key={corridorId} className="space-y-1.5">
+                  <div key={corridorId} className="space-y-2 p-3 bg-slate-50/50 rounded-xl border border-slate-200/60">
                     <div className="flex items-center justify-between text-xs text-slate-500 font-medium px-1">
                       <span className="font-mono font-semibold text-slate-800">
                         {corridorId}
@@ -134,8 +140,8 @@ export const PlanTimeline: React.FC<PlanTimelineProps> = ({
                       <span>{corridorItems.length} block assignments</span>
                     </div>
 
-                    {/* Track Timeline Bar Container */}
-                    <div className="relative h-12 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+                    {/* Maintenance Track Timeline Bar Container */}
+                    <div className="relative h-12 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
                       {/* Grid background markers */}
                       <div className="absolute inset-0 grid grid-cols-12 pointer-events-none">
                         {hourTicks.slice(0, 12).map((h) => (
@@ -193,10 +199,46 @@ export const PlanTimeline: React.FC<PlanTimelineProps> = ({
                         );
                       })}
                     </div>
+
+                    {/* Operational Train Timetable Overlay Track */}
+                    {corridorTrains.length > 0 && (
+                      <div className="space-y-1 pt-1">
+                        <div className="flex items-center gap-1.5 text-[10px] font-mono text-slate-500 pl-1">
+                          <span>🚆 Scheduled Trains ({corridorTrains.length} paths):</span>
+                        </div>
+                        <div className="relative h-6 bg-slate-100 border border-slate-200/80 rounded-lg overflow-hidden">
+                          <div className="absolute inset-0 grid grid-cols-12 pointer-events-none">
+                            {hourTicks.slice(0, 12).map((h) => (
+                              <div key={h} className="border-r border-slate-200/50 h-full" />
+                            ))}
+                          </div>
+                          {corridorTrains.map((tr) => {
+                            const tStart = Math.max(0, tr.entry_minute);
+                            const tEnd = Math.min(1440, tr.exit_minute);
+                            const tDuration = Math.max(1, tEnd - tStart);
+                            const leftPct = (tStart / 1440) * 100;
+                            const widthPct = Math.max(2, (tDuration / 1440) * 100);
+                            return (
+                              <div
+                                key={tr.train_id}
+                                style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
+                                className="absolute top-1 bottom-1 rounded bg-slate-700 text-slate-100 px-1 text-[9px] font-mono flex items-center justify-between truncate shadow-2xs select-none"
+                                title={`Train ${tr.train_id} (${tr.train_type}) | ${formatMinuteToTime(
+                                  tStart
+                                )} - ${formatMinuteToTime(tEnd)} | Priority: ${tr.priority_level}`}
+                              >
+                                <span className="truncate">{tr.train_id}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
             </div>
+
           </div>
         </div>
       )}
