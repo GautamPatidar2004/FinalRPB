@@ -17,7 +17,6 @@ const DEPARTMENTS: Department[] = [
   'Engineering',
   'Traction Distribution',
   'Signalling & Telecom',
-  'Operations',
 ];
 
 const URGENCIES: Priority[] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];

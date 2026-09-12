@@ -77,17 +77,15 @@ class RailwayPlanOptimizer:
         # 5. Check if Automatic Replanning is required
         # Triggered if:
         # a) Plan has hard constraint violations
-        # b) Any CRITICAL or HIGH priority requirement is unscheduled (status != "SCHEDULED")
-        unscheduled_high_priority = [
+        # b) Any requirement is unscheduled (status != "SCHEDULED")
+        unscheduled_requests = [
             s for s in scored_requests
-            if s.priority_category in (Priority.CRITICAL, Priority.HIGH)
-            and not any(p.request_id == s.request_id and p.status == "SCHEDULED" for p in current_plan)
+            if not any(p.request_id == s.request_id and p.status == "SCHEDULED" for p in current_plan)
         ]
 
-        needs_replanning = (not selected_candidate["feasibility"].is_feasible) or len(unscheduled_high_priority) > 0
+        needs_replanning = (not selected_candidate["feasibility"].is_feasible) or len(unscheduled_requests) > 0
 
         if needs_replanning:
-            replanning_applied = True
             current_plan, decision_log, unresolved_reports = self._replan_unresolved_requirements(
                 current_plan=current_plan,
                 dataset=dataset,
@@ -95,6 +93,7 @@ class RailwayPlanOptimizer:
                 score_map=score_map,
                 req_map=req_map,
             )
+            replanning_applied = any(d.decision_type in ("REPLANNED", "SWAPPED") for d in decision_log)
         else:
             # Build initial decision logs for clean plan
             for p in current_plan:

@@ -15,11 +15,13 @@ import type { BlockPlan } from '../../types';
 export interface PlanValidationSectionProps {
   plan: BlockPlan;
   hardViolationsCount: number;
+  conflicts?: Array<{ constraint_type?: string; reason?: string; [key: string]: any }>;
 }
 
 export const PlanValidationSection: React.FC<PlanValidationSectionProps> = ({
   plan,
   hardViolationsCount,
+  conflicts = [],
 }) => {
   const [showDecisions, setShowDecisions] = useState<boolean>(true);
 
@@ -36,49 +38,89 @@ export const PlanValidationSection: React.FC<PlanValidationSectionProps> = ({
 
   const isClean = plan.is_feasible && hardViolationsCount === 0;
 
+  // Extract all active violation types from feasibility summary, conflicts prop, and item flags
+  const feasibilityViolations: Array<{ constraint_type?: string; reason?: string }> =
+    evalSummary.feasibility?.violations || [];
+  const allViolations = [...conflicts, ...feasibilityViolations];
+
+  const violationTypeMap = new Map<string, string[]>();
+  allViolations.forEach((v) => {
+    if (v.constraint_type) {
+      const cType = v.constraint_type.toUpperCase();
+      const existing = violationTypeMap.get(cType) || [];
+      if (v.reason && !existing.includes(v.reason)) {
+        existing.push(v.reason);
+      }
+      violationTypeMap.set(cType, existing);
+    }
+  });
+
+  (plan.items || []).forEach((it) => {
+    (it.conflict_flags || []).forEach((flag: string) => {
+      const cType = flag.toUpperCase();
+      if (!violationTypeMap.has(cType)) {
+        violationTypeMap.set(cType, []);
+      }
+    });
+  });
+
   // Standard Railway Hard Constraints Rules verified by the engine
   const standardConstraintRules = [
     {
       id: 'ASSET_VALIDITY',
+      type: 'INVALID_ASSET_REFERENCE',
       name: 'Asset Reference & Chainage Validity',
       desc: 'All assets exist in infrastructure database with valid start and end kilometers.',
-      passed: true,
+      passed: !violationTypeMap.has('INVALID_ASSET_REFERENCE'),
+      reasons: violationTypeMap.get('INVALID_ASSET_REFERENCE') || [],
     },
     {
       id: 'CORRIDOR_WINDOW',
+      type: 'CORRIDOR_WINDOW_VIOLATION',
       name: 'Corridor Operating Window Boundaries',
       desc: 'Maintenance blocks strictly fall within corridor operational availability times.',
-      passed: true,
+      passed: !violationTypeMap.has('CORRIDOR_WINDOW_VIOLATION'),
+      reasons: violationTypeMap.get('CORRIDOR_WINDOW_VIOLATION') || [],
     },
     {
       id: 'REQUEST_WINDOW',
+      type: 'REQUEST_WINDOW_VIOLATION',
       name: 'Request Window Compliance',
       desc: 'Scheduled timings respect earliest start and latest end limits defined in request.',
-      passed: true,
+      passed: !violationTypeMap.has('REQUEST_WINDOW_VIOLATION'),
+      reasons: violationTypeMap.get('REQUEST_WINDOW_VIOLATION') || [],
     },
     {
       id: 'MIN_DURATION',
+      type: 'INSUFFICIENT_DURATION',
       name: 'Required Duration Allocation',
       desc: 'Full required maintenance work time is provided without unauthorized truncation.',
-      passed: true,
+      passed: !violationTypeMap.has('INSUFFICIENT_DURATION'),
+      reasons: violationTypeMap.get('INSUFFICIENT_DURATION') || [],
     },
     {
       id: 'PARALLEL_CAPACITY',
+      type: 'CORRIDOR_CAPACITY_EXCEEDED',
       name: 'Corridor Parallel Capacity Limits',
       desc: 'Maximum concurrent track possessions do not exceed corridor track safety capacity.',
-      passed: true,
+      passed: !violationTypeMap.has('CORRIDOR_CAPACITY_EXCEEDED'),
+      reasons: violationTypeMap.get('CORRIDOR_CAPACITY_EXCEEDED') || [],
     },
     {
       id: 'ASSET_CONFLICT',
+      type: 'ASSET_CONFLICT',
       name: 'Single Asset Simultaneous Possession',
       desc: 'No conflicting departments schedule overlapping work on identical physical assets.',
-      passed: true,
+      passed: !violationTypeMap.has('ASSET_CONFLICT'),
+      reasons: violationTypeMap.get('ASSET_CONFLICT') || [],
     },
     {
       id: 'TRAIN_TRAFFIC',
+      type: 'TRAIN_TRAFFIC_CONFLICT',
       name: 'Train Traffic & Express Clearance',
       desc: 'Mandatory headways and safety clear intervals preserved for passenger/freight runs.',
-      passed: isClean,
+      passed: !violationTypeMap.has('TRAIN_TRAFFIC_CONFLICT') && (violationTypeMap.size === 0 ? isClean : true),
+      reasons: violationTypeMap.get('TRAIN_TRAFFIC_CONFLICT') || [],
     },
   ];
 
@@ -131,6 +173,11 @@ export const PlanValidationSection: React.FC<PlanValidationSectionProps> = ({
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-400 mt-0.5">{rule.desc}</p>
+                  {!rule.passed && rule.reasons.length > 0 && (
+                    <div className="mt-1.5 p-1.5 bg-red-50 rounded border border-red-200 text-[10px] text-red-700 font-mono">
+                      {rule.reasons.join('; ')}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
