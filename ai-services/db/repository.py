@@ -22,7 +22,18 @@ if settings.supabase_url and settings.effective_supabase_key:
         client = create_client(settings.supabase_url, settings.effective_supabase_key)
         # Test if tables are actually migrated/accessible in Supabase
         test_res = client.table("corridors").select("corridor_id").limit(1).execute()
-        supabase_client = client
+        # Verify write capability: check if anon key has write permissions or if service role key is present
+        if not settings.supabase_service_role_key:
+            try:
+                # Probe write permission to detect RLS restriction early
+                client.table("corridors").upsert({"corridor_id": "__probe__", "name": "Probe", "length_km": 1.0}).execute()
+                client.table("corridors").delete().eq("corridor_id", "__probe__").execute()
+                supabase_client = client
+            except Exception as rls_err:
+                print(f"[Database Notice] Supabase anon key cannot write due to RLS ({rls_err}). Set SUPABASE_SERVICE_ROLE_KEY in .env for live Supabase writes. Falling back to local in-memory operational store.")
+                supabase_client = None
+        else:
+            supabase_client = client
     except Exception as exc:
         print(f"[Database Notice] Supabase tables not migrated or unreachable ({exc}). Falling back to local in-memory operational store.")
         supabase_client = None
@@ -46,7 +57,7 @@ class RailwayRepository:
         self._local_plan_items: Dict[str, List[Dict[str, Any]]] = {}
 
         # Seed initial operational data in local store if empty
-        self._ensure_default_seed()
+        self.seed_demo_operational_data()
 
     def _ensure_default_seed(self):
         if not self._local_corridors:
@@ -74,159 +85,63 @@ class RailwayRepository:
                 "updated_at": datetime.now(timezone.utc).isoformat(),
             }
 
+    def seed_demo_operational_data(self):
+        """Seed initial operational demo data for development if empty."""
+        self._ensure_default_seed()
         if not self._local_assets:
             now = datetime.now(timezone.utc).isoformat()
-            self._local_assets["AST-TRK-101"] = {
-                "asset_id": "AST-TRK-101",
-                "corridor_id": "COR-NDLS-GZB",
-                "department": "Engineering",
-                "start_km": 0.0,
-                "end_km": 15.0,
-                "track_type": "UP",
-                "created_at": now,
-                "updated_at": now,
-            }
-            self._local_assets["AST-OHE-101"] = {
-                "asset_id": "AST-OHE-101",
-                "corridor_id": "COR-NDLS-GZB",
-                "department": "Traction Distribution",
-                "start_km": 0.0,
-                "end_km": 15.0,
-                "track_type": "BOTH",
-                "created_at": now,
-                "updated_at": now,
-            }
-            self._local_assets["AST-SNT-101"] = {
-                "asset_id": "AST-SNT-101",
-                "corridor_id": "COR-NDLS-GZB",
-                "department": "Signalling & Telecom",
-                "start_km": 5.0,
-                "end_km": 10.0,
-                "track_type": "BOTH",
-                "created_at": now,
-                "updated_at": now,
-            }
-            self._local_assets["AST-TRK-201"] = {
-                "asset_id": "AST-TRK-201",
-                "corridor_id": "COR-CSMT-KYN",
-                "department": "Engineering",
-                "start_km": 0.0,
-                "end_km": 20.0,
-                "track_type": "DOWN",
-                "created_at": now,
-                "updated_at": now,
-            }
-            self._local_assets["AST-OHE-201"] = {
-                "asset_id": "AST-OHE-201",
-                "corridor_id": "COR-CSMT-KYN",
-                "department": "Traction Distribution",
-                "start_km": 0.0,
-                "end_km": 25.0,
-                "track_type": "BOTH",
-                "created_at": now,
-                "updated_at": now,
-            }
+            demo_assets = [
+                {"asset_id": "AST-TRK-101", "corridor_id": "COR-NDLS-GZB", "department": "Engineering", "start_km": 0.0, "end_km": 15.0, "track_type": "UP"},
+                {"asset_id": "AST-OHE-101", "corridor_id": "COR-NDLS-GZB", "department": "Traction Distribution", "start_km": 0.0, "end_km": 15.0, "track_type": "BOTH"},
+                {"asset_id": "AST-SNT-101", "corridor_id": "COR-NDLS-GZB", "department": "Signalling & Telecom", "start_km": 5.0, "end_km": 10.0, "track_type": "BOTH"},
+                {"asset_id": "AST-TRK-102", "corridor_id": "COR-NDLS-GZB", "department": "Engineering", "start_km": 15.0, "end_km": 30.0, "track_type": "DOWN"},
+                {"asset_id": "AST-OHE-102", "corridor_id": "COR-NDLS-GZB", "department": "Traction Distribution", "start_km": 15.0, "end_km": 30.0, "track_type": "BOTH"},
+                {"asset_id": "AST-SNT-102", "corridor_id": "COR-NDLS-GZB", "department": "Signalling & Telecom", "start_km": 20.0, "end_km": 35.0, "track_type": "BOTH"},
+                {"asset_id": "AST-TRK-103", "corridor_id": "COR-NDLS-GZB", "department": "Engineering", "start_km": 30.0, "end_km": 42.5, "track_type": "BOTH"},
+                {"asset_id": "AST-TRK-201", "corridor_id": "COR-CSMT-KYN", "department": "Engineering", "start_km": 0.0, "end_km": 20.0, "track_type": "DOWN"},
+                {"asset_id": "AST-OHE-201", "corridor_id": "COR-CSMT-KYN", "department": "Traction Distribution", "start_km": 0.0, "end_km": 25.0, "track_type": "BOTH"},
+                {"asset_id": "AST-SNT-201", "corridor_id": "COR-CSMT-KYN", "department": "Signalling & Telecom", "start_km": 10.0, "end_km": 25.0, "track_type": "BOTH"},
+                {"asset_id": "AST-TRK-202", "corridor_id": "COR-CSMT-KYN", "department": "Engineering", "start_km": 20.0, "end_km": 54.0, "track_type": "UP"},
+                {"asset_id": "AST-OHE-202", "corridor_id": "COR-CSMT-KYN", "department": "Traction Distribution", "start_km": 25.0, "end_km": 54.0, "track_type": "BOTH"},
+            ]
+            for ast in demo_assets:
+                self._local_assets[ast["asset_id"]] = {**ast, "created_at": now, "updated_at": now}
 
         if not self._local_trains:
             now = datetime.now(timezone.utc).isoformat()
-            self._local_trains["TRN-12002-SHATABDI"] = {
-                "train_id": "TRN-12002-SHATABDI",
-                "train_type": "PASSENGER_EXPRESS",
-                "corridor_id": "COR-NDLS-GZB",
-                "entry_minute": 360,
-                "exit_minute": 420,
-                "priority_level": 1,
-                "created_at": now,
-                "updated_at": now,
-            }
-            self._local_trains["TRN-12424-RAJDHANI"] = {
-                "train_id": "TRN-12424-RAJDHANI",
-                "train_type": "PASSENGER_EXPRESS",
-                "corridor_id": "COR-NDLS-GZB",
-                "entry_minute": 980,
-                "exit_minute": 1040,
-                "priority_level": 1,
-                "created_at": now,
-                "updated_at": now,
-            }
+            demo_trains = [
+                {"train_id": "TRN-12002-SHATABDI", "train_type": "PASSENGER_EXPRESS", "corridor_id": "COR-NDLS-GZB", "entry_minute": 360, "exit_minute": 420, "priority_level": 1},
+                {"train_id": "TRN-12424-RAJDHANI", "train_type": "PASSENGER_EXPRESS", "corridor_id": "COR-NDLS-GZB", "entry_minute": 980, "exit_minute": 1040, "priority_level": 1},
+                {"train_id": "TRN-12123-DECCAN", "train_type": "PASSENGER_EXPRESS", "corridor_id": "COR-CSMT-KYN", "entry_minute": 420, "exit_minute": 480, "priority_level": 1},
+                {"train_id": "TRN-22222-CSMT-RAJ", "train_type": "PASSENGER_EXPRESS", "corridor_id": "COR-CSMT-KYN", "entry_minute": 1020, "exit_minute": 1080, "priority_level": 1},
+            ]
+            for trn in demo_trains:
+                self._local_trains[trn["train_id"]] = {**trn, "created_at": now, "updated_at": now}
 
         if not self._local_requests:
             now = datetime.now(timezone.utc).isoformat()
-            self._local_requests["REQ-ENG-001"] = {
-                "request_id": "REQ-ENG-001",
-                "department": "Engineering",
-                "corridor_id": "COR-NDLS-GZB",
-                "asset_id": "AST-TRK-101",
-                "required_duration_minutes": 120,
-                "earliest_start_minute": 60,
-                "latest_end_minute": 300,
-                "is_traffic_block_required": True,
-                "is_power_block_required": False,
-                "urgency": "CRITICAL",
-                "status": "PENDING",
-                "created_at": now,
-                "updated_at": now,
-            }
-            self._local_requests["REQ-TRD-001"] = {
-                "request_id": "REQ-TRD-001",
-                "department": "Traction Distribution",
-                "corridor_id": "COR-NDLS-GZB",
-                "asset_id": "AST-OHE-101",
-                "required_duration_minutes": 90,
-                "earliest_start_minute": 120,
-                "latest_end_minute": 360,
-                "is_traffic_block_required": True,
-                "is_power_block_required": True,
-                "urgency": "HIGH",
-                "status": "PENDING",
-                "created_at": now,
-                "updated_at": now,
-            }
-            self._local_requests["REQ-SNT-001"] = {
-                "request_id": "REQ-SNT-001",
-                "department": "Signalling & Telecom",
-                "corridor_id": "COR-NDLS-GZB",
-                "asset_id": "AST-SNT-101",
-                "required_duration_minutes": 60,
-                "earliest_start_minute": 480,
-                "latest_end_minute": 720,
-                "is_traffic_block_required": False,
-                "is_power_block_required": False,
-                "urgency": "MEDIUM",
-                "status": "PENDING",
-                "created_at": now,
-                "updated_at": now,
-            }
-            self._local_requests["REQ-ENG-002"] = {
-                "request_id": "REQ-ENG-002",
-                "department": "Engineering",
-                "corridor_id": "COR-CSMT-KYN",
-                "asset_id": "AST-TRK-201",
-                "required_duration_minutes": 150,
-                "earliest_start_minute": 60,
-                "latest_end_minute": 400,
-                "is_traffic_block_required": True,
-                "is_power_block_required": False,
-                "urgency": "HIGH",
-                "status": "PENDING",
-                "created_at": now,
-                "updated_at": now,
-            }
-            self._local_requests["REQ-TRD-002"] = {
-                "request_id": "REQ-TRD-002",
-                "department": "Traction Distribution",
-                "corridor_id": "COR-CSMT-KYN",
-                "asset_id": "AST-OHE-201",
-                "required_duration_minutes": 90,
-                "earliest_start_minute": 180,
-                "latest_end_minute": 450,
-                "is_traffic_block_required": True,
-                "is_power_block_required": True,
-                "urgency": "MEDIUM",
-                "status": "PENDING",
-                "created_at": now,
-                "updated_at": now,
-            }
+            demo_requests = [
+                # COR-NDLS-GZB Workload (multi-departmental, distributed windows)
+                {"request_id": "REQ-ENG-001", "department": "Engineering", "corridor_id": "COR-NDLS-GZB", "asset_id": "AST-TRK-101", "required_duration_minutes": 120, "earliest_start_minute": 60, "latest_end_minute": 300, "is_traffic_block_required": True, "is_power_block_required": False, "urgency": "CRITICAL", "status": "PENDING"},
+                {"request_id": "REQ-TRD-001", "department": "Traction Distribution", "corridor_id": "COR-NDLS-GZB", "asset_id": "AST-OHE-101", "required_duration_minutes": 90, "earliest_start_minute": 120, "latest_end_minute": 360, "is_traffic_block_required": True, "is_power_block_required": True, "urgency": "HIGH", "status": "PENDING"},
+                {"request_id": "REQ-SNT-001", "department": "Signalling & Telecom", "corridor_id": "COR-NDLS-GZB", "asset_id": "AST-SNT-101", "required_duration_minutes": 60, "earliest_start_minute": 480, "latest_end_minute": 720, "is_traffic_block_required": False, "is_power_block_required": False, "urgency": "MEDIUM", "status": "PENDING"},
+                {"request_id": "REQ-ENG-003", "department": "Engineering", "corridor_id": "COR-NDLS-GZB", "asset_id": "AST-TRK-102", "required_duration_minutes": 90, "earliest_start_minute": 120, "latest_end_minute": 360, "is_traffic_block_required": True, "is_power_block_required": False, "urgency": "HIGH", "status": "PENDING"},
+                {"request_id": "REQ-TRD-003", "department": "Traction Distribution", "corridor_id": "COR-NDLS-GZB", "asset_id": "AST-OHE-102", "required_duration_minutes": 120, "earliest_start_minute": 600, "latest_end_minute": 900, "is_traffic_block_required": False, "is_power_block_required": True, "urgency": "HIGH", "status": "PENDING"},
+                {"request_id": "REQ-SNT-002", "department": "Signalling & Telecom", "corridor_id": "COR-NDLS-GZB", "asset_id": "AST-SNT-102", "required_duration_minutes": 60, "earliest_start_minute": 180, "latest_end_minute": 420, "is_traffic_block_required": False, "is_power_block_required": False, "urgency": "MEDIUM", "status": "PENDING"},
+                {"request_id": "REQ-ENG-004", "department": "Engineering", "corridor_id": "COR-NDLS-GZB", "asset_id": "AST-TRK-103", "required_duration_minutes": 120, "earliest_start_minute": 720, "latest_end_minute": 1080, "is_traffic_block_required": True, "is_power_block_required": False, "urgency": "MEDIUM", "status": "PENDING"},
+                {"request_id": "REQ-TRD-004", "department": "Traction Distribution", "corridor_id": "COR-NDLS-GZB", "asset_id": "AST-OHE-101", "required_duration_minutes": 90, "earliest_start_minute": 780, "latest_end_minute": 1020, "is_traffic_block_required": False, "is_power_block_required": True, "urgency": "LOW", "status": "PENDING"},
+                {"request_id": "REQ-SNT-003", "department": "Signalling & Telecom", "corridor_id": "COR-NDLS-GZB", "asset_id": "AST-SNT-101", "required_duration_minutes": 60, "earliest_start_minute": 1080, "latest_end_minute": 1320, "is_traffic_block_required": False, "is_power_block_required": False, "urgency": "LOW", "status": "PENDING"},
+
+                # COR-CSMT-KYN Workload
+                {"request_id": "REQ-ENG-002", "department": "Engineering", "corridor_id": "COR-CSMT-KYN", "asset_id": "AST-TRK-201", "required_duration_minutes": 150, "earliest_start_minute": 60, "latest_end_minute": 400, "is_traffic_block_required": True, "is_power_block_required": False, "urgency": "HIGH", "status": "PENDING"},
+                {"request_id": "REQ-TRD-002", "department": "Traction Distribution", "corridor_id": "COR-CSMT-KYN", "asset_id": "AST-OHE-201", "required_duration_minutes": 90, "earliest_start_minute": 180, "latest_end_minute": 450, "is_traffic_block_required": True, "is_power_block_required": True, "urgency": "MEDIUM", "status": "PENDING"},
+                {"request_id": "REQ-SNT-201", "department": "Signalling & Telecom", "corridor_id": "COR-CSMT-KYN", "asset_id": "AST-SNT-201", "required_duration_minutes": 60, "earliest_start_minute": 120, "latest_end_minute": 300, "is_traffic_block_required": False, "is_power_block_required": False, "urgency": "CRITICAL", "status": "PENDING"},
+                {"request_id": "REQ-ENG-202", "department": "Engineering", "corridor_id": "COR-CSMT-KYN", "asset_id": "AST-TRK-202", "required_duration_minutes": 90, "earliest_start_minute": 480, "latest_end_minute": 720, "is_traffic_block_required": True, "is_power_block_required": False, "urgency": "HIGH", "status": "PENDING"},
+                {"request_id": "REQ-TRD-202", "department": "Traction Distribution", "corridor_id": "COR-CSMT-KYN", "asset_id": "AST-OHE-202", "required_duration_minutes": 90, "earliest_start_minute": 600, "latest_end_minute": 900, "is_traffic_block_required": False, "is_power_block_required": True, "urgency": "MEDIUM", "status": "PENDING"},
+                {"request_id": "REQ-SNT-202", "department": "Signalling & Telecom", "corridor_id": "COR-CSMT-KYN", "asset_id": "AST-SNT-201", "required_duration_minutes": 60, "earliest_start_minute": 720, "latest_end_minute": 960, "is_traffic_block_required": False, "is_power_block_required": False, "urgency": "LOW", "status": "PENDING"},
+            ]
+            for req in demo_requests:
+                self._local_requests[req["request_id"]] = {**req, "created_at": now, "updated_at": now}
 
     # ==========================================
     # CORRIDORS CRUD
@@ -419,7 +334,11 @@ class RailwayRepository:
             if department:
                 q = q.eq("department", department)
             if status:
-                q = q.eq("status", status)
+                statuses = [s.strip() for s in status.split(",") if s.strip()]
+                if len(statuses) > 1:
+                    q = q.in_("status", statuses)
+                elif len(statuses) == 1:
+                    q = q.eq("status", statuses[0])
             if urgency:
                 q = q.eq("urgency", urgency)
             if asset_id:
@@ -436,7 +355,8 @@ class RailwayRepository:
         if department:
             items = [r for r in items if r.get("department") == department]
         if status:
-            items = [r for r in items if r.get("status") == status]
+            allowed_statuses = {s.strip() for s in status.split(",") if s.strip()}
+            items = [r for r in items if r.get("status") in allowed_statuses]
         if urgency:
             items = [r for r in items if r.get("urgency") == urgency]
         if asset_id:
@@ -558,6 +478,16 @@ class RailwayRepository:
                 formatted_items = [{**it, "plan_id": p_id, "created_at": now, "updated_at": now} for it in items_data]
                 res_items = self.client.table("block_plan_items").insert(formatted_items).execute()
                 saved_items = res_items.data
+                for it in items_data:
+                    req_id = it.get("request_id")
+                    if req_id and it.get("status", "SCHEDULED") == "SCHEDULED":
+                        try:
+                            self.client.table("maintenance_block_requests").update({
+                                "status": "SCHEDULED",
+                                "updated_at": now,
+                            }).eq("request_id", req_id).execute()
+                        except Exception:
+                            pass
             created_plan["items"] = saved_items
             return created_plan
 
@@ -572,6 +502,11 @@ class RailwayRepository:
                     "updated_at": now,
                     **it,
                 })
+                req_id = it.get("request_id")
+                if req_id and it.get("status", "SCHEDULED") == "SCHEDULED":
+                    if req_id in self._local_requests:
+                        self._local_requests[req_id]["status"] = "SCHEDULED"
+                        self._local_requests[req_id]["updated_at"] = now
         self._local_plan_items[p_id] = saved_items
         out = dict(plan_record)
         out["items"] = saved_items
@@ -608,6 +543,17 @@ class RailwayRepository:
         elif status == "REJECTED" and rejection_reason:
             patch["rejection_reason"] = rejection_reason
 
+        if status == "REJECTED":
+            plan_with_items = self.get_plan(plan_id, include_items=True)
+            if plan_with_items and "items" in plan_with_items:
+                for it in plan_with_items["items"]:
+                    req_id = it.get("request_id")
+                    if req_id and it.get("status", "SCHEDULED") == "SCHEDULED":
+                        try:
+                            self.update_request(req_id, {"status": "PENDING"})
+                        except Exception:
+                            pass
+
         if self.client:
             res = self.client.table("block_plans").update(patch).eq("plan_id", plan_id).execute()
             return self.get_plan(plan_id) if res.data else None
@@ -619,11 +565,20 @@ class RailwayRepository:
 
     def delete_plan(self, plan_id: str) -> bool:
         """Deletes plan only if logically safe (status is DRAFT or REJECTED)."""
-        plan = self.get_plan(plan_id, include_items=False)
+        plan = self.get_plan(plan_id, include_items=True)
         if not plan:
             return False
         if plan.get("status") in ("APPROVED", "PENDING_APPROVAL", "UNDER_REVIEW"):
             raise ValueError(f"Cannot delete plan '{plan_id}' with status '{plan.get('status')}'. Only DRAFT or REJECTED plans can be removed.")
+
+        if "items" in plan:
+            for it in plan["items"]:
+                req_id = it.get("request_id")
+                if req_id and it.get("status", "SCHEDULED") == "SCHEDULED":
+                    try:
+                        self.update_request(req_id, {"status": "PENDING"})
+                    except Exception:
+                        pass
 
         if self.client:
             res = self.client.table("block_plans").delete().eq("plan_id", plan_id).execute()
@@ -684,6 +639,19 @@ class RailwayRepository:
             return None
         target_id = item.get("id")
         target_req_id = item.get("request_id")
+
+        if "status" in updates and target_req_id:
+            new_item_status = updates["status"]
+            if new_item_status in ("DEFERRED", "REJECTED"):
+                try:
+                    self.update_request(target_req_id, {"status": "PENDING"})
+                except Exception:
+                    pass
+            elif new_item_status == "SCHEDULED":
+                try:
+                    self.update_request(target_req_id, {"status": "SCHEDULED"})
+                except Exception:
+                    pass
 
         if self.client:
             q = self.client.table("block_plan_items").update(patch)
@@ -781,7 +749,7 @@ class RailwayRepository:
         self,
         corridor_id: Optional[str] = None,
         department: Optional[str] = None,
-        status: Optional[str] = "PENDING",
+        status: Optional[str] = "PENDING,APPROVED",
     ) -> RailwayPlanningDataset:
         """
         Converts persisted operational records from Supabase/repository into

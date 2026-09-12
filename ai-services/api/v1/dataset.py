@@ -21,7 +21,7 @@ plan_optimizer = RailwayPlanOptimizer(
 def get_operational_planning_dataset(
     corridor_id: Optional[str] = Query(None, description="Target corridor identifier"),
     department: Optional[Department] = Query(None, description="Department filter"),
-    status_filter: str = Query("PENDING", alias="status", description="Request status filter (default: PENDING)"),
+    status_filter: str = Query("PENDING,APPROVED", alias="status", description="Request status filter (default: PENDING,APPROVED)"),
 ):
     """
     Extracts and converts persisted operational Railway records (corridors, assets, trains, requests)
@@ -55,7 +55,7 @@ def get_operational_planning_dataset(
 def optimize_persisted_operational_data(
     corridor_id: Optional[str] = Query(None, description="Target corridor identifier"),
     department: Optional[Department] = Query(None, description="Department filter"),
-    status_filter: str = Query("PENDING", alias="status", description="Request status filter (default: PENDING)"),
+    status_filter: str = Query("PENDING,APPROVED", alias="status", description="Request status filter (default: PENDING,APPROVED)"),
 ):
     """
     Directly triggers the AI Optimization Engine on current persisted database records.

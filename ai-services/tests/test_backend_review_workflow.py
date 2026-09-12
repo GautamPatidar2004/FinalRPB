@@ -237,6 +237,10 @@ def test_plan_rejection_workflow_and_validation():
     assert persisted["rejection_reason"] == "VIP special train scheduled during this corridor window"
     assert len(persisted["items"]) > 0
 
+    # Verify request status reverted to PENDING
+    req_after_rej = client.get("/api/v1/requests/REQ-R-01").json()
+    assert req_after_rej["status"] == "PENDING"
+
 
 def test_invalid_status_transitions():
     """Test 12: Test invalid status transitions (e.g., DRAFT directly to APPROVED)."""

@@ -50,6 +50,14 @@ import {
 
 type ActiveTab = 'workspace' | 'history';
 
+const PIPELINE_STAGES = [
+  'Preparing operational requests & timetable data',
+  'Checking track capacity & timetable constraints',
+  'Optimizing multi-departmental block windows',
+  'Validating hard safety & corridor rules',
+  'Finalizing optimized block schedule',
+];
+
 export const PlanningPage: React.FC = () => {
   const navigate = useNavigate();
 
@@ -78,9 +86,21 @@ export const PlanningPage: React.FC = () => {
 
   // AI Generation State
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [pipelineStageIndex, setPipelineStageIndex] = useState<number>(0);
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [generatedPlan, setGeneratedPlan] = useState<PlanGenerationResult | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isGenerating) {
+      setPipelineStageIndex(0);
+      return;
+    }
+    const interval = setInterval(() => {
+      setPipelineStageIndex((prev) => (prev + 1) % PIPELINE_STAGES.length);
+    }, 700);
+    return () => clearInterval(interval);
+  }, [isGenerating]);
 
   // Load operational inputs from backend
   const loadOperationalData = useCallback(async () => {
@@ -89,7 +109,7 @@ export const PlanningPage: React.FC = () => {
     try {
       const [corrs, reqs, asts, avails, plans] = await Promise.all([
         operationalService.getCorridors(),
-        operationalService.getRequests({ status: 'PENDING' }),
+        operationalService.getRequests({ status: 'PENDING,APPROVED' }),
         operationalService.getAssets(),
         operationalService.getAvailability().catch(() => [] as CorridorAvailability[]),
         planningService.getPlans().catch(() => [] as BlockPlan[]),
@@ -257,6 +277,17 @@ export const PlanningPage: React.FC = () => {
 
       setGeneratedPlan(response);
 
+      // Re-fetch operational data so allocated requests disappear from the unallocated candidate list
+      await loadOperationalData();
+
+      // Smooth scroll to generated plan results
+      setTimeout(() => {
+        const el = document.getElementById('generated-plan-results');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+
       // Save to sessionStorage for Prompt 5 continuation bridge
       try {
         sessionStorage.setItem('last_generated_plan', JSON.stringify(response));
@@ -288,9 +319,13 @@ export const PlanningPage: React.FC = () => {
   // Handoff to Prompt 5
   const handleProceedToReview = () => {
     if (!generatedPlan) return;
+    const planToPass = {
+      ...generatedPlan,
+      items: generatedPlan.scheduled_blocks || [],
+    };
     navigate(`/review/${generatedPlan.plan_id}`, {
       state: {
-        plan: generatedPlan,
+        plan: planToPass,
         corridor: activeCorridor,
         requests: selectedRequestsList,
       },
@@ -846,17 +881,45 @@ export const PlanningPage: React.FC = () => {
 
           {/* GENERATION PROGRESS PANEL (WHILE RUNNING) */}
           {isGenerating && (
-            <div className="p-6 bg-slate-900 text-white rounded-xl shadow-lg border border-slate-800 space-y-4">
+            <div className="p-6 bg-slate-900 text-white rounded-xl shadow-lg border border-slate-800 space-y-4 animate-in fade-in duration-200">
               <div className="flex items-center gap-3">
                 <div className="w-6 h-6 rounded-full border-2 border-blue-400 border-t-transparent animate-spin"></div>
                 <div>
                   <h3 className="text-sm font-semibold text-white">
                     Railway AI Optimization Pipeline In Progress
                   </h3>
-                  <p className="text-xs text-slate-400">
-                    Evaluating multi-strategy candidates against track capacity, train traffic & OHE safety constraints.
+                  <p className="text-xs text-blue-300 font-medium">
+                    {PIPELINE_STAGES[pipelineStageIndex]}...
                   </p>
                 </div>
+              </div>
+
+              {/* Pipeline stages breadcrumb */}
+              <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 pt-2 border-t border-slate-800 text-xs">
+                {PIPELINE_STAGES.map((stg, idx) => {
+                  const isActive = idx === pipelineStageIndex;
+                  const isDone = idx < pipelineStageIndex;
+                  return (
+                    <div
+                      key={stg}
+                      className={`p-2 rounded-lg transition-colors border ${
+                        isActive
+                          ? 'bg-blue-900/60 border-blue-500 text-blue-200 shadow-sm'
+                          : isDone
+                          ? 'bg-slate-800/40 border-slate-700 text-slate-400'
+                          : 'bg-slate-800/20 border-slate-800/50 text-slate-500'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 font-medium text-[11px]">
+                        <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-blue-400 animate-ping' : isDone ? 'bg-emerald-400' : 'bg-slate-600'}`} />
+                        <span>Stage {idx + 1}</span>
+                      </div>
+                      <div className="text-[10px] truncate mt-0.5" title={stg}>
+                        {stg}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs pt-2 border-t border-slate-800">
@@ -884,7 +947,7 @@ export const PlanningPage: React.FC = () => {
 
           {/* AI RESULT PREVIEW AREA (UPON COMPLETION) */}
           {generatedPlan && !isGenerating && (
-            <div className="space-y-6 pt-4 border-t-2 border-blue-500">
+            <div id="generated-plan-results" className="space-y-6 pt-4 border-t-2 border-blue-500">
               {/* Result Header Card */}
               <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">

@@ -139,11 +139,11 @@ def test_plan_generation_and_database_persistence():
     assert persisted["status"] == "DRAFT"
     assert len(persisted["items"]) == len(plan["scheduled_blocks"])
 
-    # 3. Verify original maintenance requests in database remain unchanged (status still PENDING)
+    # 3. Verify original maintenance requests in database updated to SCHEDULED
     req1 = client.get("/api/v1/requests/REQ-ENG-001").json()
-    assert req1["status"] == "PENDING"
+    assert req1["status"] == "SCHEDULED"
     req2 = client.get("/api/v1/requests/REQ-TRD-001").json()
-    assert req2["status"] == "PENDING"
+    assert req2["status"] == "SCHEDULED"
 
 
 # ====================================================================
@@ -200,14 +200,22 @@ def test_plan_generation_validation_errors():
     assert res_missing_id.status_code == 400
     assert "do not exist" in res_missing_id.json()["detail"]
 
-    # 2. Non-pending request ID
-    client.patch("/api/v1/requests/REQ-ENG-001", json={"status": "APPROVED"})
-    res_not_pending = client.post("/api/v1/plans/generate", json={
+    # 2. Ineligible request ID (neither PENDING nor APPROVED, e.g. REJECTED)
+    client.patch("/api/v1/requests/REQ-ENG-001", json={"status": "REJECTED"})
+    res_not_eligible = client.post("/api/v1/plans/generate", json={
         "corridor_id": "COR-NDLS-GZB",
         "request_ids": ["REQ-ENG-001"],
     })
-    assert res_not_pending.status_code == 400
-    assert "must be PENDING" in res_not_pending.json()["detail"]
+    assert res_not_eligible.status_code == 400
+    assert "must be PENDING or APPROVED" in res_not_eligible.json()["detail"]
+
+    # 2b. Approved request ID IS eligible
+    client.patch("/api/v1/requests/REQ-ENG-001", json={"status": "APPROVED"})
+    res_approved = client.post("/api/v1/plans/generate", json={
+        "corridor_id": "COR-NDLS-GZB",
+        "request_ids": ["REQ-ENG-001"],
+    })
+    assert res_approved.status_code == 201
 
     # 3. Non-existent corridor
     res_bad_corridor = client.post("/api/v1/plans/generate", json={
