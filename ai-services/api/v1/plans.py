@@ -72,23 +72,23 @@ def generate_and_persist_plan(payload: PlanGenerationRequest):
     # 1. Validate requested IDs if specified
     if payload.request_ids:
         missing_ids = []
-        non_pending_ids = []
+        non_eligible_ids = []
         for req_id in payload.request_ids:
             rec = repository.get_request(req_id)
             if not rec:
                 missing_ids.append(req_id)
-            elif rec.get("status") != "PENDING":
-                non_pending_ids.append(f"{req_id} ({rec.get('status')})")
+            elif rec.get("status") not in ("PENDING", "APPROVED"):
+                non_eligible_ids.append(f"{req_id} ({rec.get('status')})")
 
         if missing_ids:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"The following requested maintenance IDs do not exist: {', '.join(missing_ids)}",
             )
-        if non_pending_ids:
+        if non_eligible_ids:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"The following requests are not eligible for planning (must be PENDING): {', '.join(non_pending_ids)}",
+                detail=f"The following requests are not eligible for planning (must be PENDING or APPROVED): {', '.join(non_eligible_ids)}",
             )
 
     # 2. Build RailwayPlanningDataset from persisted operational data
@@ -96,7 +96,7 @@ def generate_and_persist_plan(payload: PlanGenerationRequest):
         dataset = repository.build_planning_dataset(
             corridor_id=payload.corridor_id,
             department=dept_str,
-            status="PENDING",
+            status="PENDING,APPROVED",
         )
     except ValueError as val_err:
         raise HTTPException(

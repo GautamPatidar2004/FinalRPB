@@ -31,47 +31,89 @@ class CandidatePlanGenerator:
             "joint_corridor_batching": self.generate_joint_corridor_batching(),
         }
 
+    def _has_conflict(
+        self,
+        req: MaintenanceBlockRequest,
+        candidate_start: int,
+        candidate_end: int,
+        scheduled_blocks: List[GeneratedBlockPlanRecord],
+    ) -> bool:
+        """
+        Validates if [candidate_start, candidate_end] for req conflicts with:
+        1. Corridor available operating window
+        2. Train timetable (if is_traffic_block_required)
+        3. Asset conflicts (same asset overlap unless compatible ENG+TRD joint)
+        4. Corridor max parallel blocks capacity
+        """
+        corridor = next((c for c in self.dataset.corridors if c.corridor_id == req.corridor_id), None)
+        if corridor:
+            if candidate_start < corridor.available_start_minute or candidate_end > corridor.available_end_minute:
+                return True
+
+        if req.is_traffic_block_required:
+            for train in self.dataset.trains:
+                if train.corridor_id == req.corridor_id:
+                    if not (train.exit_minute <= candidate_start or train.entry_minute >= candidate_end):
+                        return True
+
+        allow_joint = self.dataset.constraints.allow_joint_department_blocks
+        max_concurrent = self.dataset.constraints.max_concurrent_blocks_per_corridor
+        if corridor and corridor.max_parallel_blocks:
+            max_concurrent = min(max_concurrent, corridor.max_parallel_blocks)
+
+        overlap_count = 1
+        for b in scheduled_blocks:
+            if b.corridor_id == req.corridor_id and b.status == "SCHEDULED":
+                if not (candidate_end <= b.scheduled_start_minute or candidate_start >= b.scheduled_end_minute):
+                    overlap_count += 1
+                    if b.asset_id == req.asset_id:
+                        is_compatible_joint = (
+                            allow_joint
+                            and b.department != req.department
+                            and {b.department, req.department} == {Department.ENG, Department.TRD}
+                        )
+                        if not is_compatible_joint:
+                            return True
+
+        if overlap_count > max_concurrent:
+            return True
+
+        return False
+
     def generate_priority_greedy(self) -> List[GeneratedBlockPlanRecord]:
         """
         Strategy 1: High-Priority First (Greedy Window).
-        Iterates in strict priority order, allocating the earliest available non-overlapping time.
+        Iterates in strict priority order, allocating the earliest feasible non-conflicting time.
         """
         plan: List[GeneratedBlockPlanRecord] = []
-        corridor_timelines: Dict[str, List[tuple[int, int]]] = {}
+        step = 15
 
         for idx, req in enumerate(self.ordered_requests, start=1):
-            corridor_intervals = corridor_timelines.setdefault(req.corridor_id, [])
             candidate_start = req.earliest_start_minute
             duration = req.required_duration_minutes
+            placed = False
 
-            # Stagger if overlapping with already placed block on the same corridor
-            conflict = True
-            while conflict and candidate_start + duration <= req.latest_end_minute:
-                conflict = False
-                for s_start, s_end in corridor_intervals:
-                    if not (candidate_start + duration <= s_start or candidate_start >= s_end):
-                        # Collision on corridor, advance past this block
-                        candidate_start = s_end + self.dataset.constraints.min_headway_minutes
-                        conflict = True
-                        break
-
-            if candidate_start + duration <= req.latest_end_minute:
-                plan.append(
-                    GeneratedBlockPlanRecord(
-                        plan_id=f"PG-{idx:03d}",
-                        request_id=req.request_id,
-                        corridor_id=req.corridor_id,
-                        asset_id=req.asset_id,
-                        department=req.department,
-                        scheduled_start_minute=candidate_start,
-                        scheduled_end_minute=candidate_start + duration,
-                        allocated_duration_minutes=duration,
-                        status="SCHEDULED",
+            while candidate_start + duration <= req.latest_end_minute:
+                candidate_end = candidate_start + duration
+                if not self._has_conflict(req, candidate_start, candidate_end, plan):
+                    plan.append(
+                        GeneratedBlockPlanRecord(
+                            plan_id=f"PG-{idx:03d}",
+                            request_id=req.request_id,
+                            corridor_id=req.corridor_id,
+                            asset_id=req.asset_id,
+                            department=req.department,
+                            scheduled_start_minute=candidate_start,
+                            scheduled_end_minute=candidate_end,
+                            allocated_duration_minutes=duration,
+                            status="SCHEDULED",
+                        )
                     )
-                )
-                corridor_intervals.append((candidate_start, candidate_start + duration))
-            else:
-                # Unable to fit within requested boundary without conflict
+                    placed = True
+                    break
+                candidate_start += step
+
+            if not placed:
                 plan.append(
                     GeneratedBlockPlanRecord(
                         plan_id=f"PG-{idx:03d}",
@@ -95,47 +137,60 @@ class CandidatePlanGenerator:
         Concentrates high-priority requirements inside the 01:00-06:00 (60-360m) low-disruption window.
         """
         plan: List[GeneratedBlockPlanRecord] = []
-        corridor_timelines: Dict[str, List[tuple[int, int]]] = {}
-
         NIGHT_START = 60
         NIGHT_END = 360
+        step = 15
 
         for idx, req in enumerate(self.ordered_requests, start=1):
-            corridor_intervals = corridor_timelines.setdefault(req.corridor_id, [])
             duration = req.required_duration_minutes
+            placed = False
 
-            # First attempt: place in night shadow window
+            # First attempt: place in night shadow window [NIGHT_START, NIGHT_END]
             candidate_start = max(req.earliest_start_minute, NIGHT_START)
-            candidate_end = candidate_start + duration
-
-            can_fit_night = candidate_end <= min(req.latest_end_minute, NIGHT_END)
-            if can_fit_night:
-                for s_start, s_end in corridor_intervals:
-                    if not (candidate_end <= s_start or candidate_start >= s_end):
-                        can_fit_night = False
-                        break
-
-            # If cannot fit in night shadow, fall back to daytime earliest window
-            if not can_fit_night:
-                candidate_start = max(req.earliest_start_minute, NIGHT_END + 30)
+            while candidate_start + duration <= min(req.latest_end_minute, NIGHT_END):
                 candidate_end = candidate_start + duration
-
-            if candidate_end <= req.latest_end_minute:
-                plan.append(
-                    GeneratedBlockPlanRecord(
-                        plan_id=f"NS-{idx:03d}",
-                        request_id=req.request_id,
-                        corridor_id=req.corridor_id,
-                        asset_id=req.asset_id,
-                        department=req.department,
-                        scheduled_start_minute=candidate_start,
-                        scheduled_end_minute=candidate_end,
-                        allocated_duration_minutes=duration,
-                        status="SCHEDULED",
+                if not self._has_conflict(req, candidate_start, candidate_end, plan):
+                    plan.append(
+                        GeneratedBlockPlanRecord(
+                            plan_id=f"NS-{idx:03d}",
+                            request_id=req.request_id,
+                            corridor_id=req.corridor_id,
+                            asset_id=req.asset_id,
+                            department=req.department,
+                            scheduled_start_minute=candidate_start,
+                            scheduled_end_minute=candidate_end,
+                            allocated_duration_minutes=duration,
+                            status="SCHEDULED",
+                        )
                     )
-                )
-                corridor_intervals.append((candidate_start, candidate_end))
-            else:
+                    placed = True
+                    break
+                candidate_start += step
+
+            # If cannot fit in night shadow, fall back to daytime window
+            if not placed:
+                candidate_start = max(req.earliest_start_minute, NIGHT_END)
+                while candidate_start + duration <= req.latest_end_minute:
+                    candidate_end = candidate_start + duration
+                    if not self._has_conflict(req, candidate_start, candidate_end, plan):
+                        plan.append(
+                            GeneratedBlockPlanRecord(
+                                plan_id=f"NS-{idx:03d}",
+                                request_id=req.request_id,
+                                corridor_id=req.corridor_id,
+                                asset_id=req.asset_id,
+                                department=req.department,
+                                scheduled_start_minute=candidate_start,
+                                scheduled_end_minute=candidate_end,
+                                allocated_duration_minutes=duration,
+                                status="SCHEDULED",
+                            )
+                        )
+                        placed = True
+                        break
+                    candidate_start += step
+
+            if not placed:
                 plan.append(
                     GeneratedBlockPlanRecord(
                         plan_id=f"NS-{idx:03d}",
@@ -170,8 +225,6 @@ class CandidatePlanGenerator:
         plan_counter = 1
         for corridor_id, c_requests in corridor_reqs.items():
             timeline_cursor = 120  # baseline start in night/morning shadow
-
-            # Try to pair compatible ENG and TRD requests if joint blocks are allowed
             paired_req_ids = set()
 
             if allow_joint:
@@ -181,7 +234,6 @@ class CandidatePlanGenerator:
                 for eng_r in eng_reqs:
                     for trd_r in trd_reqs:
                         if trd_r.request_id not in paired_req_ids and eng_r.request_id not in paired_req_ids:
-                            # Compatible pair! Co-schedule at the same start time
                             joint_start = max(eng_r.earliest_start_minute, trd_r.earliest_start_minute, timeline_cursor)
                             eng_duration = eng_r.required_duration_minutes
                             trd_duration = trd_r.required_duration_minutes
@@ -226,30 +278,38 @@ class CandidatePlanGenerator:
                                 timeline_cursor = joint_start + max(eng_duration, trd_duration) + self.dataset.constraints.min_headway_minutes
                                 break
 
-            # Schedule remaining un-paired requests sequentially on this corridor
+            # Schedule remaining un-paired requests on this corridor
             for req in c_requests:
                 if req.request_id in paired_req_ids:
                     continue
 
-                start_min = max(req.earliest_start_minute, timeline_cursor)
-                end_min = start_min + req.required_duration_minutes
+                duration = req.required_duration_minutes
+                candidate_start = max(req.earliest_start_minute, timeline_cursor)
+                step = 15
+                placed = False
 
-                if end_min <= req.latest_end_minute:
-                    plan.append(
-                        GeneratedBlockPlanRecord(
-                            plan_id=f"JC-{plan_counter:03d}",
-                            request_id=req.request_id,
-                            corridor_id=corridor_id,
-                            asset_id=req.asset_id,
-                            department=req.department,
-                            scheduled_start_minute=start_min,
-                            scheduled_end_minute=end_min,
-                            allocated_duration_minutes=req.required_duration_minutes,
-                            status="SCHEDULED",
+                while candidate_start + duration <= req.latest_end_minute:
+                    candidate_end = candidate_start + duration
+                    if not self._has_conflict(req, candidate_start, candidate_end, plan):
+                        plan.append(
+                            GeneratedBlockPlanRecord(
+                                plan_id=f"JC-{plan_counter:03d}",
+                                request_id=req.request_id,
+                                corridor_id=corridor_id,
+                                asset_id=req.asset_id,
+                                department=req.department,
+                                scheduled_start_minute=candidate_start,
+                                scheduled_end_minute=candidate_end,
+                                allocated_duration_minutes=duration,
+                                status="SCHEDULED",
+                            )
                         )
-                    )
-                    timeline_cursor = end_min + self.dataset.constraints.min_headway_minutes
-                else:
+                        plan_counter += 1
+                        placed = True
+                        break
+                    candidate_start += step
+
+                if not placed:
                     plan.append(
                         GeneratedBlockPlanRecord(
                             plan_id=f"JC-{plan_counter:03d}",
@@ -264,6 +324,6 @@ class CandidatePlanGenerator:
                             conflict_flags=["WINDOW_EXCEEDED"],
                         )
                     )
-                plan_counter += 1
+                    plan_counter += 1
 
         return plan

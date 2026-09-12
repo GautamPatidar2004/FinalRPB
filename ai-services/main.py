@@ -11,6 +11,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from config.settings import settings
 from api.routes import router
 from models.priority_model import MODEL_PATH
+from db.repository import repository
+
+if settings.environment.lower() == "development":
+    repository.seed_demo_operational_data()
 
 app = FastAPI(
     title="Railway Block Planning AI Engine",

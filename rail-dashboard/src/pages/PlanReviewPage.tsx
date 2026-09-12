@@ -311,8 +311,9 @@ export const PlanReviewPage: React.FC = () => {
   };
 
   const handleInspectBlockByRequestId = (requestId: string) => {
-    if (!selectedPlan?.items) return;
-    const match = selectedPlan.items.find((it) => it.request_id === requestId);
+    const list = selectedPlan?.items || (selectedPlan as any)?.scheduled_blocks;
+    if (!list) return;
+    const match = list.find((it: any) => it.request_id === requestId);
     if (match) {
       setInspectedBlock(match);
       setIsModalOpen(true);
@@ -361,7 +362,7 @@ export const PlanReviewPage: React.FC = () => {
       );
     }
 
-    const items = selectedPlan.items || [];
+    const items = selectedPlan.items || (selectedPlan as any).scheduled_blocks || [];
 
     return (
       <div className="space-y-6">
@@ -417,6 +418,7 @@ export const PlanReviewPage: React.FC = () => {
         <PlanValidationSection
           plan={selectedPlan}
           hardViolationsCount={totalConflicts}
+          conflicts={conflicts}
         />
 
         {/* 8. Individual Block Details Modal */}
