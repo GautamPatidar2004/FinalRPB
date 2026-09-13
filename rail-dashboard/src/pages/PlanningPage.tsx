@@ -305,7 +305,7 @@ export const PlanningPage: React.FC = () => {
       }
 
       // Refresh persisted list in background
-      planningService.getPlans().then(setPersistedPlans).catch(() => {});
+      planningService.getPlans().then(setPersistedPlans).catch(() => { });
     } catch (err: any) {
       const msg =
         err?.message ||
@@ -338,17 +338,10 @@ export const PlanningPage: React.FC = () => {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
               Block Planning Workspace
             </h1>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              AI Engine Ready
-            </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Automated multi-departmental railway maintenance window allocation, train path deconfliction & feasibility engine.
-          </p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -356,11 +349,10 @@ export const PlanningPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('workspace')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${
-                activeTab === 'workspace'
-                  ? 'bg-white text-blue-700 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-[15px] font-semibold rounded-md transition-colors ${activeTab === 'workspace'
+                ? 'bg-white text-blue-700 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
             >
               <Cpu className="w-3.5 h-3.5" />
               <span>Workspace</span>
@@ -368,11 +360,10 @@ export const PlanningPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('history')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${
-                activeTab === 'history'
-                  ? 'bg-white text-blue-700 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-[15px] font-semibold rounded-md transition-colors ${activeTab === 'history'
+                ? 'bg-white text-blue-700 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
             >
               <FileText className="w-3.5 h-3.5" />
               <span>Persisted Plans ({persistedPlans.length})</span>
@@ -428,7 +419,7 @@ export const PlanningPage: React.FC = () => {
               <TableBody>
                 {persistedPlans.map((p) => (
                   <TableRow key={p.plan_id}>
-                    <TableCell className="font-mono text-xs font-semibold text-blue-700">
+                    <TableCell className="font-mono text-[15px] font-semibold text-blue-700">
                       {p.plan_id}
                     </TableCell>
                     <TableCell className="font-medium text-slate-900">{p.title}</TableCell>
@@ -444,10 +435,10 @@ export const PlanningPage: React.FC = () => {
                     <TableCell className="font-mono font-semibold text-slate-900">
                       {p.overall_score != null ? `${Number(p.overall_score).toFixed(1)}%` : '—'}
                     </TableCell>
-                    <TableCell className="text-xs font-mono text-slate-600">
+                    <TableCell className="text-[15px] font-mono text-slate-600">
                       {p.selected_strategy || 'Default'}
                     </TableCell>
-                    <TableCell className="text-xs text-slate-500">
+                    <TableCell className="text-[15px] text-slate-500">
                       {formatTimestamp(p.created_at)}
                     </TableCell>
                     <TableCell className="text-right">
@@ -471,7 +462,7 @@ export const PlanningPage: React.FC = () => {
         <div className="space-y-6">
           {/* Validation Failure Banner */}
           {validationError && (
-            <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-800 text-xs">
+            <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-800 text-[15px]">
               <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
               <div className="flex-1">
                 <span className="font-semibold">Planning Validation Issue: </span>
@@ -489,13 +480,13 @@ export const PlanningPage: React.FC = () => {
 
           {/* AI / API Generation Error Banner */}
           {generationError && (
-            <div className="flex items-start justify-between gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs">
+            <div className="flex items-start justify-between gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-[15px]">
               <div className="flex items-start gap-3">
                 <XCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-semibold text-amber-900">AI Plan Generation Encountered an Error</h4>
                   <p className="mt-0.5 text-amber-800">{generationError}</p>
-                  <p className="mt-1 text-[11px] text-amber-700">
+                  <p className="mt-1 text-[12.5px] text-amber-700">
                     Your planning selections have been preserved. You can modify inputs or retry generation.
                   </p>
                 </div>
@@ -522,13 +513,13 @@ export const PlanningPage: React.FC = () => {
             >
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-[15px] font-semibold text-slate-700 mb-1">
                     Select Section / Corridor
                   </label>
                   <select
                     value={selectedCorridorId}
                     onChange={(e) => setSelectedCorridorId(e.target.value)}
-                    className="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full text-[15px] font-medium bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     {corridors.map((c) => (
                       <option key={c.corridor_id} value={c.corridor_id}>
@@ -540,7 +531,7 @@ export const PlanningPage: React.FC = () => {
 
                 {/* Corridor Operational Metadata */}
                 {activeCorridor && (
-                  <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2 text-xs">
+                  <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2 text-[15px]">
                     <div className="flex items-center justify-between text-slate-600">
                       <span>Section Length:</span>
                       <span className="font-semibold text-slate-900">{formatKm(activeCorridor.length_km)}</span>
@@ -585,7 +576,7 @@ export const PlanningPage: React.FC = () => {
             >
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-[15px] font-semibold text-slate-700 mb-1">
                     Department Filter
                   </label>
                   <div className="grid grid-cols-2 gap-1.5">
@@ -599,11 +590,10 @@ export const PlanningPage: React.FC = () => {
                         key={d.id}
                         type="button"
                         onClick={() => setSelectedDepartment(d.id)}
-                        className={`px-2.5 py-1.5 text-xs font-medium rounded-md border text-center transition-colors ${
-                          selectedDepartment === d.id
-                            ? 'bg-blue-50 border-blue-500 text-blue-700 font-semibold'
-                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
-                        }`}
+                        className={`px-2.5 py-1.5 text-[15px] font-medium rounded-md border text-center transition-colors ${selectedDepartment === d.id
+                          ? 'bg-blue-50 border-blue-500 text-blue-700 font-semibold'
+                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                          }`}
                       >
                         {d.label}
                       </button>
@@ -612,51 +602,47 @@ export const PlanningPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-[15px] font-semibold text-slate-700 mb-1">
                     Planning Horizon Preset
                   </label>
-                  <div className="grid grid-cols-2 gap-1.5 text-xs">
+                  <div className="grid grid-cols-2 gap-1.5 text-[15px]">
                     <button
                       type="button"
                       onClick={() => handlePresetChange('FULL_DAY')}
-                      className={`px-2 py-1 rounded border text-left ${
-                        windowPreset === 'FULL_DAY'
-                          ? 'bg-blue-50 border-blue-500 text-blue-700 font-semibold'
-                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                      }`}
+                      className={`px-2 py-1 rounded border text-left ${windowPreset === 'FULL_DAY'
+                        ? 'bg-blue-50 border-blue-500 text-blue-700 font-semibold'
+                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                        }`}
                     >
                       Full Day (24h)
                     </button>
                     <button
                       type="button"
                       onClick={() => handlePresetChange('NIGHT')}
-                      className={`px-2 py-1 rounded border text-left ${
-                        windowPreset === 'NIGHT'
-                          ? 'bg-blue-50 border-blue-500 text-blue-700 font-semibold'
-                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                      }`}
+                      className={`px-2 py-1 rounded border text-left ${windowPreset === 'NIGHT'
+                        ? 'bg-blue-50 border-blue-500 text-blue-700 font-semibold'
+                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                        }`}
                     >
                       Night Shadow (01-06)
                     </button>
                     <button
                       type="button"
                       onClick={() => handlePresetChange('EARLY_MORNING')}
-                      className={`px-2 py-1 rounded border text-left ${
-                        windowPreset === 'EARLY_MORNING'
-                          ? 'bg-blue-50 border-blue-500 text-blue-700 font-semibold'
-                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                      }`}
+                      className={`px-2 py-1 rounded border text-left ${windowPreset === 'EARLY_MORNING'
+                        ? 'bg-blue-50 border-blue-500 text-blue-700 font-semibold'
+                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                        }`}
                     >
                       Morning (04-08)
                     </button>
                     <button
                       type="button"
                       onClick={() => handlePresetChange('CUSTOM')}
-                      className={`px-2 py-1 rounded border text-left ${
-                        windowPreset === 'CUSTOM'
-                          ? 'bg-blue-50 border-blue-500 text-blue-700 font-semibold'
-                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                      }`}
+                      className={`px-2 py-1 rounded border text-left ${windowPreset === 'CUSTOM'
+                        ? 'bg-blue-50 border-blue-500 text-blue-700 font-semibold'
+                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                        }`}
                     >
                       Custom Limits
                     </button>
@@ -666,7 +652,7 @@ export const PlanningPage: React.FC = () => {
                 {/* Minute Bounds */}
                 <div className="grid grid-cols-2 gap-3 pt-1">
                   <div>
-                    <label className="block text-[11px] font-medium text-slate-500 mb-0.5">
+                    <label className="block text-[12.5px] font-medium text-slate-500 mb-0.5">
                       Start Time ({startMinute}m)
                     </label>
                     <input
@@ -676,11 +662,11 @@ export const PlanningPage: React.FC = () => {
                         setStartMinute(parseTimeToMinute(e.target.value));
                         setWindowPreset('CUSTOM');
                       }}
-                      className="w-full text-xs font-mono bg-white border border-slate-300 rounded px-2 py-1 text-slate-900"
+                      className="w-full text-[15px] font-mono bg-white border border-slate-300 rounded px-2 py-1 text-slate-900"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-medium text-slate-500 mb-0.5">
+                    <label className="block text-[12.5px] font-medium text-slate-500 mb-0.5">
                       End Time ({endMinute}m)
                     </label>
                     <input
@@ -690,7 +676,7 @@ export const PlanningPage: React.FC = () => {
                         setEndMinute(parseTimeToMinute(e.target.value));
                         setWindowPreset('CUSTOM');
                       }}
-                      className="w-full text-xs font-mono bg-white border border-slate-300 rounded px-2 py-1 text-slate-900"
+                      className="w-full text-[15px] font-mono bg-white border border-slate-300 rounded px-2 py-1 text-slate-900"
                     />
                   </div>
                 </div>
@@ -705,7 +691,7 @@ export const PlanningPage: React.FC = () => {
             >
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-[15px] font-semibold text-slate-700 mb-1">
                     Plan Title (Optional)
                   </label>
                   <input
@@ -713,12 +699,12 @@ export const PlanningPage: React.FC = () => {
                     value={planTitle}
                     onChange={(e) => setPlanTitle(e.target.value)}
                     placeholder={`Autonomous Block Plan - ${activeCorridor?.corridor_id || 'COR'}`}
-                    className="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full text-[15px] bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
                 {/* Live Planning Readiness Checklist */}
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2 text-xs">
+                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2 text-[15px]">
                   <div className="flex items-center justify-between">
                     <span className="text-slate-600">Selected Requests:</span>
                     <span className="font-semibold text-slate-900">
@@ -748,7 +734,7 @@ export const PlanningPage: React.FC = () => {
                 {/* Generate Action Button */}
                 <Button
                   variant="primary"
-                  className="w-full justify-center py-2.5 shadow-sm text-sm"
+                  className="w-full justify-center py-2.5 shadow-sm text-[16.5px]"
                   onClick={handleGeneratePlan}
                   isLoading={isGenerating}
                   disabled={isGenerating || selectedRequestIds.size === 0}
@@ -824,10 +810,10 @@ export const PlanningPage: React.FC = () => {
                             className="w-4 h-4 rounded text-blue-600 border-slate-300 focus:ring-blue-500 cursor-pointer"
                           />
                         </TableCell>
-                        <TableCell className="font-mono text-xs font-semibold text-blue-700">
+                        <TableCell className="font-mono text-[15px] font-semibold text-blue-700">
                           {r.request_id}
                         </TableCell>
-                        <TableCell className="text-xs font-medium text-slate-800">
+                        <TableCell className="text-[15px] font-medium text-slate-800">
                           {r.department}
                         </TableCell>
                         <TableCell>
@@ -836,35 +822,35 @@ export const PlanningPage: React.FC = () => {
                             statusText={r.urgency}
                           />
                         </TableCell>
-                        <TableCell className="font-mono text-xs text-slate-700">
+                        <TableCell className="font-mono text-[15px] text-slate-700">
                           <div>{r.asset_id}</div>
                           {linkedAsset && (
-                            <div className="text-[10px] text-slate-400 font-sans">
+                            <div className="text-[11.5px] text-slate-400 font-sans">
                               {linkedAsset.track_type} • {formatKm(linkedAsset.start_km)} - {formatKm(linkedAsset.end_km)}
                             </div>
                           )}
                         </TableCell>
-                        <TableCell className="font-mono text-xs font-medium text-slate-900">
+                        <TableCell className="font-mono text-[15px] font-medium text-slate-900">
                           {formatDuration(r.required_duration_minutes)}
                         </TableCell>
-                        <TableCell className="font-mono text-xs text-slate-600">
+                        <TableCell className="font-mono text-[15px] text-slate-600">
                           {formatMinuteToTime(r.earliest_start_minute || 0)} -{' '}
                           {formatMinuteToTime(r.latest_end_minute || 1440)}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1.5 flex-wrap">
                             {r.is_traffic_block_required && (
-                              <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-50 text-red-700 border border-red-200">
+                              <span className="px-1.5 py-0.5 rounded text-[11.5px] font-semibold bg-red-50 text-red-700 border border-red-200">
                                 Traffic
                               </span>
                             )}
                             {r.is_power_block_required && (
-                              <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                              <span className="px-1.5 py-0.5 rounded text-[11.5px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                                 Power / OHE
                               </span>
                             )}
                             {!r.is_traffic_block_required && !r.is_power_block_required && (
-                              <span className="text-[11px] text-slate-400">—</span>
+                              <span className="text-[12.5px] text-slate-400">—</span>
                             )}
                           </div>
                         </TableCell>
@@ -885,36 +871,35 @@ export const PlanningPage: React.FC = () => {
               <div className="flex items-center gap-3">
                 <div className="w-6 h-6 rounded-full border-2 border-blue-400 border-t-transparent animate-spin"></div>
                 <div>
-                  <h3 className="text-sm font-semibold text-white">
+                  <h3 className="text-[16.5px] font-semibold text-white">
                     Railway AI Optimization Pipeline In Progress
                   </h3>
-                  <p className="text-xs text-blue-300 font-medium">
+                  <p className="text-[15px] text-blue-300 font-medium">
                     {PIPELINE_STAGES[pipelineStageIndex]}...
                   </p>
                 </div>
               </div>
 
               {/* Pipeline stages breadcrumb */}
-              <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 pt-2 border-t border-slate-800 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 pt-2 border-t border-slate-800 text-[15px]">
                 {PIPELINE_STAGES.map((stg, idx) => {
                   const isActive = idx === pipelineStageIndex;
                   const isDone = idx < pipelineStageIndex;
                   return (
                     <div
                       key={stg}
-                      className={`p-2 rounded-lg transition-colors border ${
-                        isActive
-                          ? 'bg-blue-900/60 border-blue-500 text-blue-200 shadow-sm'
-                          : isDone
+                      className={`p-2 rounded-lg transition-colors border ${isActive
+                        ? 'bg-blue-900/60 border-blue-500 text-blue-200 shadow-sm'
+                        : isDone
                           ? 'bg-slate-800/40 border-slate-700 text-slate-400'
                           : 'bg-slate-800/20 border-slate-800/50 text-slate-500'
-                      }`}
+                        }`}
                     >
-                      <div className="flex items-center gap-1.5 font-medium text-[11px]">
+                      <div className="flex items-center gap-1.5 font-medium text-[12.5px]">
                         <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-blue-400 animate-ping' : isDone ? 'bg-emerald-400' : 'bg-slate-600'}`} />
                         <span>Stage {idx + 1}</span>
                       </div>
-                      <div className="text-[10px] truncate mt-0.5" title={stg}>
+                      <div className="text-[11.5px] truncate mt-0.5" title={stg}>
                         {stg}
                       </div>
                     </div>
@@ -922,23 +907,23 @@ export const PlanningPage: React.FC = () => {
                 })}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs pt-2 border-t border-slate-800">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-[15px] pt-2 border-t border-slate-800">
                 <div className="p-2.5 bg-slate-800/80 rounded-lg">
-                  <span className="block text-[11px] text-slate-400">Target Corridor</span>
+                  <span className="block text-[12.5px] text-slate-400">Target Corridor</span>
                   <span className="font-mono font-semibold text-blue-300">{selectedCorridorId}</span>
                 </div>
                 <div className="p-2.5 bg-slate-800/80 rounded-lg">
-                  <span className="block text-[11px] text-slate-400">Selected Requests</span>
+                  <span className="block text-[12.5px] text-slate-400">Selected Requests</span>
                   <span className="font-semibold text-blue-300">{selectedRequestIds.size} Requests</span>
                 </div>
                 <div className="p-2.5 bg-slate-800/80 rounded-lg">
-                  <span className="block text-[11px] text-slate-400">Planning Window</span>
+                  <span className="block text-[12.5px] text-slate-400">Planning Window</span>
                   <span className="font-mono font-semibold text-blue-300">
                     {formatMinuteToTime(startMinute)} - {formatMinuteToTime(endMinute)}
                   </span>
                 </div>
                 <div className="p-2.5 bg-slate-800/80 rounded-lg">
-                  <span className="block text-[11px] text-slate-400">AI Engine</span>
+                  <span className="block text-[12.5px] text-slate-400">AI Engine</span>
                   <span className="font-semibold text-emerald-400">Priority Greedy + Feasibility</span>
                 </div>
               </div>
@@ -953,7 +938,7 @@ export const PlanningPage: React.FC = () => {
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-semibold">
+                      <span className="text-[15px] font-mono px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-semibold">
                         {generatedPlan.plan_id}
                       </span>
                       <Badge
@@ -965,7 +950,7 @@ export const PlanningPage: React.FC = () => {
                     <h2 className="text-lg font-bold text-slate-900 mt-2">
                       {generatedPlan.title}
                     </h2>
-                    <p className="text-xs text-slate-500 mt-0.5">
+                    <p className="text-[15px] text-slate-500 mt-0.5">
                       Generated at {formatTimestamp(generatedPlan.created_at)} using strategy{' '}
                       <span className="font-mono font-semibold text-slate-700">
                         {generatedPlan.selected_strategy}
@@ -978,7 +963,7 @@ export const PlanningPage: React.FC = () => {
                       variant="primary"
                       onClick={handleProceedToReview}
                       rightIcon={<ArrowRight className="w-4 h-4" />}
-                      className="shadow-md text-xs font-semibold py-2 px-4"
+                      className="shadow-md text-[15px] font-semibold py-2 px-4"
                     >
                       Inspect Plan Details, Operational Timeline & Validation
                     </Button>
@@ -988,25 +973,25 @@ export const PlanningPage: React.FC = () => {
                 {/* Score & Feasibility KPI Summary Tiles */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                   <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                    <span className="block text-[11px] font-medium text-slate-500">Overall Score</span>
+                    <span className="block text-[12.5px] font-medium text-slate-500">Overall Score</span>
                     <span className="text-xl font-bold font-mono text-blue-600">
                       {Number(generatedPlan.overall_score).toFixed(1)}%
                     </span>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                    <span className="block text-[11px] font-medium text-slate-500">Scheduled Blocks</span>
+                    <span className="block text-[12.5px] font-medium text-slate-500">Scheduled Blocks</span>
                     <span className="text-xl font-bold text-slate-900">
                       {generatedPlan.scheduled_blocks?.length || 0} / {selectedRequestIds.size}
                     </span>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                    <span className="block text-[11px] font-medium text-slate-500">Train Conflicts</span>
+                    <span className="block text-[12.5px] font-medium text-slate-500">Train Conflicts</span>
                     <span className="text-xl font-bold text-emerald-600">
                       {generatedPlan.evaluation?.metrics?.train_conflicts ?? 0}
                     </span>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                    <span className="block text-[11px] font-medium text-slate-500">Night Shadow Slots</span>
+                    <span className="block text-[12.5px] font-medium text-slate-500">Night Shadow Slots</span>
                     <span className="text-xl font-bold text-indigo-600">
                       {generatedPlan.evaluation?.metrics?.night_shadow_placements ?? 0}
                     </span>
@@ -1016,13 +1001,13 @@ export const PlanningPage: React.FC = () => {
                 {/* Factor Scores Breakdown */}
                 {generatedPlan.evaluation?.factor_scores && (
                   <div className="pt-2 border-t border-slate-100">
-                    <h4 className="text-xs font-semibold text-slate-700 mb-2">
+                    <h4 className="text-[15px] font-semibold text-slate-700 mb-2">
                       Multi-Factor Optimization Assessment
                     </h4>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 text-xs">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 text-[15px]">
                       {Object.entries(generatedPlan.evaluation.factor_scores).map(([key, score]) => (
                         <div key={key} className="p-2 bg-slate-50 rounded border border-slate-200">
-                          <span className="block text-[10px] text-slate-500 capitalize truncate">
+                          <span className="block text-[11.5px] text-slate-500 capitalize truncate">
                             {key.replace(/_/g, ' ')}
                           </span>
                           <span className="font-mono font-bold text-slate-900">
@@ -1062,23 +1047,23 @@ export const PlanningPage: React.FC = () => {
                     <TableBody>
                       {generatedPlan.scheduled_blocks.map((block) => (
                         <TableRow key={block.id || block.request_id}>
-                          <TableCell className="font-mono text-xs font-semibold text-blue-700">
+                          <TableCell className="font-mono text-[15px] font-semibold text-blue-700">
                             {block.request_id}
                           </TableCell>
-                          <TableCell className="text-xs font-medium text-slate-800">
+                          <TableCell className="text-[15px] font-medium text-slate-800">
                             {block.department}
                           </TableCell>
-                          <TableCell className="font-mono text-xs text-slate-700">
+                          <TableCell className="font-mono text-[15px] text-slate-700">
                             {block.asset_id}
                           </TableCell>
-                          <TableCell className="font-mono text-xs font-semibold text-slate-900">
+                          <TableCell className="font-mono text-[15px] font-semibold text-slate-900">
                             {formatMinuteToTime(block.scheduled_start_minute)} -{' '}
                             {formatMinuteToTime(block.scheduled_end_minute)}
-                            <span className="text-[10px] text-slate-500 ml-1.5 font-normal">
+                            <span className="text-[11.5px] text-slate-500 ml-1.5 font-normal">
                               ({block.scheduled_start_minute}m - {block.scheduled_end_minute}m)
                             </span>
                           </TableCell>
-                          <TableCell className="font-mono text-xs font-medium text-slate-900">
+                          <TableCell className="font-mono text-[15px] font-medium text-slate-900">
                             {formatDuration(block.allocated_duration_minutes)}
                           </TableCell>
                           <TableCell>
@@ -1094,14 +1079,14 @@ export const PlanningPage: React.FC = () => {
                                 {block.conflict_flags.map((flag, idx) => (
                                   <span
                                     key={idx}
-                                    className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-50 text-red-700 border border-red-200"
+                                    className="px-1.5 py-0.5 rounded text-[11.5px] font-semibold bg-red-50 text-red-700 border border-red-200"
                                   >
                                     {flag}
                                   </span>
                                 ))}
                               </div>
                             ) : (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700">
+                              <span className="inline-flex items-center gap-1 text-[12.5px] font-medium text-emerald-700">
                                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                                 Conflict Free
                               </span>
@@ -1126,13 +1111,13 @@ export const PlanningPage: React.FC = () => {
                       {generatedPlan.decision_log.map((d, idx) => (
                         <div
                           key={idx}
-                          className="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs space-y-1"
+                          className="p-3 bg-slate-50 rounded-lg border border-slate-200 text-[15px] space-y-1"
                         >
                           <div className="flex items-center justify-between">
                             <span className="font-mono font-semibold text-blue-700">
                               {d.request_id}
                             </span>
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-200 text-slate-700">
+                            <span className="px-1.5 py-0.5 rounded text-[11.5px] font-medium bg-slate-200 text-slate-700">
                               {d.decision_type}
                             </span>
                           </div>
@@ -1141,7 +1126,7 @@ export const PlanningPage: React.FC = () => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-xs text-slate-500 italic">No decision logs recorded.</p>
+                    <p className="text-[15px] text-slate-500 italic">No decision logs recorded.</p>
                   )}
                 </Card>
 
@@ -1150,7 +1135,7 @@ export const PlanningPage: React.FC = () => {
                   title="Evaluation Strengths & Disruption Considerations"
                   subtitle="Automated constraint assessment insights from planning evaluator."
                 >
-                  <div className="space-y-3 text-xs">
+                  <div className="space-y-3 text-[15px]">
                     <div>
                       <h5 className="font-semibold text-emerald-800 flex items-center gap-1.5 mb-1.5">
                         <CheckCircle2 className="w-4 h-4 text-emerald-600" />

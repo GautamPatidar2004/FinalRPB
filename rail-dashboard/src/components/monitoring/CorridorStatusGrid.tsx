@@ -18,7 +18,7 @@ export const CorridorStatusGrid: React.FC<CorridorStatusGridProps> = ({ corridor
             <MapPin className="w-4 h-4 text-emerald-600" />
             Corridor Operational Windows & Track Capacity
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-sm text-slate-500 mt-0.5">
             Confirmed operational windows and maximum parallel block limits across active sections.
           </p>
         </div>
@@ -31,7 +31,7 @@ export const CorridorStatusGrid: React.FC<CorridorStatusGridProps> = ({ corridor
             className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition-colors space-y-3"
           >
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs font-bold text-blue-700">
+              <span className="font-mono text-sm font-bold text-blue-700">
                 {c.corridor_id}
               </span>
               <Badge

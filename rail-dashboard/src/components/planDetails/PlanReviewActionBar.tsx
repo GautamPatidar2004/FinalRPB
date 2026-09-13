@@ -47,7 +47,7 @@ export const PlanReviewActionBar: React.FC<PlanReviewActionBarProps> = ({
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_2px_12px_rgba(15,23,42,0.08),0_1px_3px_rgba(15,23,42,0.05)] p-5 space-y-4">
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-800 flex items-start gap-2">
+        <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-[15px] text-red-800 flex items-start gap-2">
           <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
@@ -57,13 +57,13 @@ export const PlanReviewActionBar: React.FC<PlanReviewActionBarProps> = ({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+            <span className="text-[15px] font-semibold uppercase tracking-wider text-slate-400">
               Review & Lifecycle Status
             </span>
             <Badge statusText={status} dot />
           </div>
 
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-2 text-[15px]">
             {isDraft && (
               <span className="text-slate-600">
                 Plan generated and awaiting formal operational review initiation.
@@ -141,7 +141,7 @@ export const PlanReviewActionBar: React.FC<PlanReviewActionBarProps> = ({
             <button
               type="button"
               onClick={() => setShowHistory(!showHistory)}
-              className="px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-1.5 transition-colors"
+              className="px-2.5 py-1.5 rounded-lg border border-slate-200 text-[15px] font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-1.5 transition-colors"
             >
               <History className="w-3.5 h-3.5 text-slate-400" />
               <span>Audit Trail ({reviewHistory.length})</span>
@@ -157,8 +157,8 @@ export const PlanReviewActionBar: React.FC<PlanReviewActionBarProps> = ({
 
       {/* Collapsible Audit History Trail */}
       {showHistory && reviewHistory.length > 0 && (
-        <div className="pt-3 border-t border-slate-100 space-y-2 text-xs">
-          <span className="font-semibold text-slate-700 block text-[11px] uppercase tracking-wider">
+        <div className="pt-3 border-t border-slate-100 space-y-2 text-[15px]">
+          <span className="font-semibold text-slate-700 block text-[12.5px] uppercase tracking-wider">
             Review Lifecycle Audit Trail
           </span>
           <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden bg-slate-50/50 font-mono">
@@ -171,11 +171,11 @@ export const PlanReviewActionBar: React.FC<PlanReviewActionBarProps> = ({
                     By {rec.reviewer || 'Anonymous'}
                   </span>
                   <span className="text-slate-400">•</span>
-                  <span className="text-slate-500 font-sans text-[11px]">
+                  <span className="text-slate-500 font-sans text-[12.5px]">
                     {rec.previous_status} → {rec.new_status}
                   </span>
                 </div>
-                <div className="flex items-center gap-3 text-slate-400 text-[11px]">
+                <div className="flex items-center gap-3 text-slate-400 text-[12.5px]">
                   {rec.comment && (
                     <span className="text-slate-700 font-sans italic">
                       "{rec.comment}"

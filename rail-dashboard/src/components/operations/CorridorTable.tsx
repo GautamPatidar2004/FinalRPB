@@ -121,7 +121,7 @@ export const CorridorTable: React.FC<CorridorTableProps> = ({
                 setCurrentPage(1);
               }}
               placeholder="Search by Corridor ID or section name..."
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors"
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[15px] text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors"
             />
           </div>
 
@@ -132,7 +132,7 @@ export const CorridorTable: React.FC<CorridorTableProps> = ({
                 setElectrifiedOnly(!electrifiedOnly);
                 setCurrentPage(1);
               }}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold border transition-colors ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[15px] font-semibold border transition-colors ${
                 electrifiedOnly
                   ? 'bg-blue-100 text-blue-900 border-blue-300 shadow-2xs'
                   : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
@@ -225,11 +225,11 @@ export const CorridorTable: React.FC<CorridorTableProps> = ({
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-2">
                           <MapPin className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                          <span className="font-mono text-xs font-bold text-slate-900">
+                          <span className="font-mono text-[15px] font-bold text-slate-900">
                             {c.corridor_id}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-600 font-medium pl-5 truncate max-w-[200px]">
+                        <p className="text-[15px] text-slate-600 font-medium pl-5 truncate max-w-[200px]">
                           {c.name}
                         </p>
                       </div>
@@ -237,7 +237,7 @@ export const CorridorTable: React.FC<CorridorTableProps> = ({
 
                     {/* Length */}
                     <TableCell>
-                      <span className="font-mono text-xs font-semibold text-slate-800">
+                      <span className="font-mono text-[15px] font-semibold text-slate-800">
                         {c.length_km} km
                       </span>
                     </TableCell>
@@ -245,7 +245,7 @@ export const CorridorTable: React.FC<CorridorTableProps> = ({
                     {/* Traction Electrification */}
                     <TableCell>
                       <span
-                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold border ${
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[12.5px] font-semibold border ${
                           c.is_electrified
                             ? 'bg-blue-50 text-blue-700 border-blue-200'
                             : 'bg-slate-50 text-slate-600 border-slate-200'
@@ -259,7 +259,7 @@ export const CorridorTable: React.FC<CorridorTableProps> = ({
                     {/* 24h Availability Window Visual */}
                     <TableCell className="min-w-[200px]">
                       <div className="space-y-1">
-                        <div className="flex items-center justify-between text-[11px] font-mono">
+                        <div className="flex items-center justify-between text-[12.5px] font-mono">
                           <span className="font-semibold text-slate-800">
                             {formatMinuteToTime(c.available_start_minute)} – {formatMinuteToTime(c.available_end_minute)}
                           </span>
@@ -284,7 +284,7 @@ export const CorridorTable: React.FC<CorridorTableProps> = ({
                     {/* Parallel Block Capacity */}
                     <TableCell className="min-w-[130px]">
                       <div className="space-y-1">
-                        <div className="flex justify-between text-[11px] font-mono">
+                        <div className="flex justify-between text-[12.5px] font-mono">
                           <span className="font-bold text-slate-800">
                             {c.scheduled_blocks_count || 0} / {c.max_parallel_blocks}
                           </span>
@@ -307,7 +307,7 @@ export const CorridorTable: React.FC<CorridorTableProps> = ({
 
                     {/* Timetable Trains */}
                     <TableCell>
-                      <div className="flex items-center gap-1.5 font-mono text-xs text-slate-800">
+                      <div className="flex items-center gap-1.5 font-mono text-[15px] text-slate-800">
                         <Train className="w-3.5 h-3.5 text-slate-400" />
                         <span>{c.trains_count || 0}</span>
                       </div>
@@ -382,7 +382,7 @@ export const CorridorTable: React.FC<CorridorTableProps> = ({
           </Table>
 
           {/* Pagination Controls */}
-          <div className="flex items-center justify-between text-xs text-slate-600 px-2 pt-2">
+          <div className="flex items-center justify-between text-[15px] text-slate-600 px-2 pt-2">
             <div>
               Showing{' '}
               <span className="font-semibold text-slate-900">
