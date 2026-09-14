@@ -8,8 +8,6 @@ import {
   CalendarCheck2,
   FileCheck,
   Activity,
-  Menu,
-  X,
   Radio,
   Clock,
   Train,
@@ -60,11 +58,11 @@ export const AppLayout: React.FC = () => {
     dashboardService.getHealth().then(setHealth).catch(() => setHealth(null));
   }, []);
 
-  const currentPage = NAV_ITEMS.find((n) =>
-    n.path === '/dashboard'
-      ? location.pathname === '/' || location.pathname === '/dashboard'
-      : location.pathname.startsWith(n.path)
-  );
+  // const currentPage = NAV_ITEMS.find((n) =>
+  //   n.path === '/dashboard'
+  //     ? location.pathname === '/' || location.pathname === '/dashboard'
+  //     : location.pathname.startsWith(n.path)
+  // );
 
   return (
     <div className="app-shell">
@@ -102,7 +100,7 @@ export const AppLayout: React.FC = () => {
                 className={`${sidebarOpen && "flex"} items-center gap-5 px-3 py-2.5 rounded-xl text-[14px] font-medium transition-colors duration-200 whitespace-nowrap relative ${isActive ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800'}`}
               >
                 <div className={`w-[32px] h-[32px] shrink-0 rounded-lg flex items-center justify-center transition-colors ${isActive ? 'bg-red-100/50 text-red-600 dark:bg-red-900/40 dark:text-red-400' : 'bg-gray-100/50 text-gray-500 dark:bg-gray-800/50 group-hover:bg-gray-200 dark:group-hover:bg-gray-700'}`}>
-                  <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+                  <Icon size={18} />
                 </div>
                 <div className={`flex-1 min-w-0 flex items-center ${sidebarOpen ? 'block' : 'hidden lg:hidden'} group-hover:block`}>
                   <div className={`leading-tight ${isActive ? 'font-semibold' : ''}`}>{item.name}</div>
@@ -127,7 +125,7 @@ export const AppLayout: React.FC = () => {
                 className={`${sidebarOpen && "flex"} items-center gap-5 px-3 py-2.5 rounded-xl text-[14px] font-medium transition-colors duration-200 whitespace-nowrap relative ${isActive ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800'}`}
               >
                 <div className={`w-[32px] h-[32px] shrink-0 rounded-lg flex items-center justify-center transition-colors ${isActive ? 'bg-red-100/50 text-red-600 dark:bg-red-900/40 dark:text-red-400' : 'bg-gray-100/50 text-gray-500 dark:bg-gray-800/50 group-hover:bg-gray-200 dark:group-hover:bg-gray-700'}`}>
-                  <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+                  <Icon size={18} />
                 </div>
                 <div className={`flex-1 min-w-0 flex items-center ${sidebarOpen ? 'block' : 'hidden lg:hidden'} group-hover:block`}>
                   <div className={`leading-tight ${isActive ? 'font-semibold' : ''}`}>{item.name}</div>

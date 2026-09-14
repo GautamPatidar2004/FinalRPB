@@ -24,8 +24,8 @@ export const OperationalAlerts: React.FC<OperationalAlertsProps> = ({ alerts }) 
     return alerts.filter((a) => a.severity === severityFilter);
   }, [alerts, severityFilter]);
 
-  const criticalCount = alerts.filter((a) => a.severity === 'CRITICAL').length;
-  const warningCount = alerts.filter((a) => a.severity === 'WARNING').length;
+  // const criticalCount = alerts.filter((a) => a.severity === 'CRITICAL').length;
+  // const warningCount = alerts.filter((a) => a.severity === 'WARNING').length;
 
   const handleAction = (alert: DashboardAlertItem) => {
     if (alert.entity_id?.startsWith('PLAN-')) {

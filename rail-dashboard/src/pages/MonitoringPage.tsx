@@ -14,7 +14,7 @@ import type {
   DashboardActivityItem,
   BlockPlan,
 } from '../types';
-import { Button, LoadingState, ErrorState, Badge } from '../components/common';
+import { Button, LoadingState, ErrorState } from '../components/common';
 import {
   LiveTelemetryGauges,
   AiPlanningInsights,
@@ -33,7 +33,7 @@ export const MonitoringPage: React.FC = () => {
   const [latestPlan, setLatestPlan] = useState<BlockPlan | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [lastRefreshed, setLastRefreshed] = useState<string>('');
+  const [, setLastRefreshed] = useState<string>('');
 
   const loadMonitoringData = useCallback(async () => {
     setIsLoading(true);
