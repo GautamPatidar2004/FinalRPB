@@ -33,18 +33,12 @@ export const LiveTelemetryGauges: React.FC<LiveTelemetryGaugesProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
           <div className="flex items-center gap-2">
             <Radio
-              className={`w-4 h-4 ${
-                isHealthy ? 'text-emerald-500 animate-pulse' : 'text-amber-500'
-              }`}
+              className={`w-4 h-4 ${isHealthy ? 'text-emerald-500 animate-pulse' : 'text-amber-500'
+                }`}
             />
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900">
               Planning Engine & Health Telemetry
             </h2>
-          </div>
-          <div className="flex items-center gap-2 font-mono text-xs text-slate-500">
-            <span>Engine: {health?.service || 'RPB-Planning-Service'}</span>
-            <span className="text-slate-300">•</span>
-            <span>Ver: {health?.version || 'v1.0.0'}</span>
           </div>
         </div>
 
@@ -55,9 +49,8 @@ export const LiveTelemetryGauges: React.FC<LiveTelemetryGaugesProps> = ({
             </span>
             <div className="flex items-center gap-1.5 mt-1">
               <span
-                className={`w-2 h-2 rounded-full ${
-                  isHealthy ? 'bg-emerald-500' : 'bg-amber-500'
-                }`}
+                className={`w-2 h-2 rounded-full ${isHealthy ? 'bg-emerald-500' : 'bg-amber-500'
+                  }`}
               />
               <span className="text-sm font-bold font-mono text-slate-900 capitalize">
                 {health?.status || 'Connecting'}
@@ -94,8 +87,8 @@ export const LiveTelemetryGauges: React.FC<LiveTelemetryGaugesProps> = ({
               {kpis?.feasible_plan_percentage != null
                 ? `${kpis.feasible_plan_percentage}%`
                 : summary
-                ? `${summary.feasible_plans} / ${summary.total_plans}`
-                : '—'}
+                  ? `${summary.feasible_plans} / ${summary.total_plans}`
+                  : '—'}
             </div>
           </div>
         </div>

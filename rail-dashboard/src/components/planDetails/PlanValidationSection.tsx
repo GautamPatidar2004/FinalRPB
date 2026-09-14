@@ -129,10 +129,10 @@ export const PlanValidationSection: React.FC<PlanValidationSectionProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
         <div>
-          <h2 className="text-base font-bold text-slate-900">
+          <h2 className="text-[18.5px] font-bold text-slate-900">
             Railway Safety Rules & AI Optimization Validation
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-[15px] text-slate-500 mt-0.5">
             Deterministic rule evaluation matrix and multi-objective scoring breakdown.
           </p>
         </div>
@@ -144,7 +144,7 @@ export const PlanValidationSection: React.FC<PlanValidationSectionProps> = ({
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-blue-600" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+            <h3 className="text-[15px] font-bold uppercase tracking-wider text-slate-700">
               Railway Hard Constraint Verification
             </h3>
           </div>
@@ -159,11 +159,11 @@ export const PlanValidationSection: React.FC<PlanValidationSectionProps> = ({
                 )}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-semibold text-slate-800">
+                    <span className="text-[15px] font-semibold text-slate-800">
                       {rule.name}
                     </span>
                     <span
-                      className={`text-[10px] font-bold px-1.5 py-0.2 rounded uppercase ${
+                      className={`text-[11.5px] font-bold px-1.5 py-0.2 rounded uppercase ${
                         rule.passed
                           ? 'bg-emerald-50 text-emerald-700'
                           : 'bg-red-50 text-red-700'
@@ -172,9 +172,9 @@ export const PlanValidationSection: React.FC<PlanValidationSectionProps> = ({
                       {rule.passed ? 'PASSED' : 'VIOLATION'}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-0.5">{rule.desc}</p>
+                  <p className="text-[12.5px] text-slate-400 mt-0.5">{rule.desc}</p>
                   {!rule.passed && rule.reasons.length > 0 && (
-                    <div className="mt-1.5 p-1.5 bg-red-50 rounded border border-red-200 text-[10px] text-red-700 font-mono">
+                    <div className="mt-1.5 p-1.5 bg-red-50 rounded border border-red-200 text-[11.5px] text-red-700 font-mono">
                       {rule.reasons.join('; ')}
                     </div>
                   )}
@@ -188,7 +188,7 @@ export const PlanValidationSection: React.FC<PlanValidationSectionProps> = ({
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <BarChart3 className="w-4 h-4 text-indigo-600" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+            <h3 className="text-[15px] font-bold uppercase tracking-wider text-slate-700">
               Multi-Objective Factor Scores
             </h3>
           </div>
@@ -205,20 +205,20 @@ export const PlanValidationSection: React.FC<PlanValidationSectionProps> = ({
                     key={key}
                     className="p-3 bg-slate-50 rounded-xl border border-slate-200"
                   >
-                    <span className="block text-[11px] font-medium text-slate-500 truncate" title={cleanName}>
+                    <span className="block text-[12.5px] font-medium text-slate-500 truncate" title={cleanName}>
                       {cleanName}
                     </span>
                     <div className="flex items-baseline gap-1 mt-1">
                       <span className="text-lg font-bold font-mono text-slate-900">
                         {numVal.toFixed(1)}
                       </span>
-                      <span className="text-[10px] font-medium text-slate-400">/ 100</span>
+                      <span className="text-[11.5px] font-medium text-slate-400">/ 100</span>
                     </div>
                   </div>
                 );
               })
             ) : (
-              <div className="col-span-2 p-4 text-center text-xs text-slate-400 bg-slate-50 rounded-xl border border-slate-200">
+              <div className="col-span-2 p-4 text-center text-[15px] text-slate-400 bg-slate-50 rounded-xl border border-slate-200">
                 Detailed factor breakdown available upon initial AI generation.
               </div>
             )}
@@ -230,7 +230,7 @@ export const PlanValidationSection: React.FC<PlanValidationSectionProps> = ({
               {strengths.map((s, idx) => (
                 <div
                   key={`str-${idx}`}
-                  className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 flex items-start gap-2"
+                  className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-[15px] text-emerald-800 flex items-start gap-2"
                 >
                   <Award className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
                   <span>{s}</span>
@@ -239,7 +239,7 @@ export const PlanValidationSection: React.FC<PlanValidationSectionProps> = ({
               {penalties.map((p, idx) => (
                 <div
                   key={`pen-${idx}`}
-                  className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 flex items-start gap-2"
+                  className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-[15px] text-amber-800 flex items-start gap-2"
                 >
                   <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
                   <span>{p}</span>
@@ -260,7 +260,7 @@ export const PlanValidationSection: React.FC<PlanValidationSectionProps> = ({
           >
             <div className="flex items-center gap-2">
               <Cpu className="w-4 h-4 text-blue-600" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+              <h3 className="text-[15px] font-bold uppercase tracking-wider text-slate-700">
                 Engine Decision Log ({decisionLog.length} assignments)
               </h3>
             </div>
@@ -276,16 +276,16 @@ export const PlanValidationSection: React.FC<PlanValidationSectionProps> = ({
               {decisionLog.map((dec, dIdx) => (
                 <div
                   key={dIdx}
-                  className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs space-y-1"
+                  className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[15px] space-y-1"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2 font-mono">
                       <span className="font-bold text-blue-700">{dec.request_id}</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-700">
+                      <span className="text-[11.5px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-700">
                         {dec.priority_category || 'NORMAL'}
                       </span>
                     </div>
-                    <span className="text-[11px] font-mono text-slate-400 uppercase">
+                    <span className="text-[12.5px] font-mono text-slate-400 uppercase">
                       {dec.decision_type}
                     </span>
                   </div>

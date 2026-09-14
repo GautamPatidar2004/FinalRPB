@@ -21,7 +21,7 @@ export const OperationalDataPage: React.FC = () => {
         <button
           type="button"
           onClick={() => handleTabChange('requests')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-colors border-b-2 -mb-px ${
+          className={`flex items-center gap-2 px-4 py-2.5 text-[15px] font-semibold rounded-t-lg transition-colors border-b-2 -mb-px ${
             activeTab === 'requests'
               ? 'text-blue-600 border-blue-600 bg-blue-50/50'
               : 'text-slate-600 hover:text-slate-900 border-transparent hover:bg-slate-50'
@@ -34,7 +34,7 @@ export const OperationalDataPage: React.FC = () => {
         <button
           type="button"
           onClick={() => handleTabChange('assets')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-colors border-b-2 -mb-px ${
+          className={`flex items-center gap-2 px-4 py-2.5 text-[15px] font-semibold rounded-t-lg transition-colors border-b-2 -mb-px ${
             activeTab === 'assets'
               ? 'text-blue-600 border-blue-600 bg-blue-50/50'
               : 'text-slate-600 hover:text-slate-900 border-transparent hover:bg-slate-50'
@@ -47,7 +47,7 @@ export const OperationalDataPage: React.FC = () => {
         <button
           type="button"
           onClick={() => handleTabChange('corridors')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-colors border-b-2 -mb-px ${
+          className={`flex items-center gap-2 px-4 py-2.5 text-[15px] font-semibold rounded-t-lg transition-colors border-b-2 -mb-px ${
             activeTab === 'corridors'
               ? 'text-blue-600 border-blue-600 bg-blue-50/50'
               : 'text-slate-600 hover:text-slate-900 border-transparent hover:bg-slate-50'

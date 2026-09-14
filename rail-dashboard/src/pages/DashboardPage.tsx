@@ -63,9 +63,7 @@ export const DashboardPage: React.FC = () => {
         <div className="dashboard__title-group">
           <div className="dashboard__title-row">
             <h1 className="dashboard__title">Operations Control</h1>
-            <Badge variant="blue" statusText="LIVE MONITORING" dot />
           </div>
-          <p className="dashboard__desc">Real-time maintenance demand, corridor availability, and AI planning KPIs.</p>
         </div>
         <div className="dashboard__refresh">
           {lastRefreshed && (
@@ -147,7 +145,7 @@ export const DashboardPage: React.FC = () => {
 
       {/* Middle grid */}
       <div className="dashboard__mid-grid">
-        <Card title="Maintenance Workload & Scheduling" subtitle="Real scheduling progress from backend database records">
+        <Card title="Maintenance Workload & Scheduling">
           {summary ? (
             <div>
               <div className="workload__progress-bar">
@@ -194,7 +192,7 @@ export const DashboardPage: React.FC = () => {
           )}
         </Card>
 
-        <Card title="Plan Approval Pipeline" subtitle="Human review lifecycle state">
+        <Card title="Plan Approval Pipeline">
           {summary ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {[
@@ -225,7 +223,7 @@ export const DashboardPage: React.FC = () => {
       </div>
 
       {/* Corridor Table */}
-      <Card title="Track Corridor Operational Status" subtitle="Real availability windows and current scheduled block load per corridor">
+      <Card title="Track Corridor Operational Status">
         {corridors.length === 0 ? (
           <EmptyState title="No Corridors Registered" message="There are currently no corridors in the database." />
         ) : (
@@ -271,7 +269,7 @@ export const DashboardPage: React.FC = () => {
 
       {/* Bottom Grid */}
       <div className="dashboard__bottom-grid">
-        <Card title="Operational Attention & Alerts" subtitle="Active hard constraint conflicts and overdue critical requests">
+        <Card title="Operational Attention & Alerts">
           {alerts.length === 0 ? (
             <div className="alert-empty">
               <CheckCircle2 size={36} style={{ color: 'var(--emerald)' }} />
@@ -299,7 +297,7 @@ export const DashboardPage: React.FC = () => {
           )}
         </Card>
 
-        <Card title="Recent Operational Activity" subtitle="Chronological audit feed from plans, reviews, and request submissions">
+        <Card title="Recent Operational Activity">
           {activity.length === 0 ? (
             <div className="activity-empty">
               <Activity size={36} style={{ color: 'var(--text-muted)' }} />

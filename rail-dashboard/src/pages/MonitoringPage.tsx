@@ -14,7 +14,7 @@ import type {
   DashboardActivityItem,
   BlockPlan,
 } from '../types';
-import { Button, LoadingState, ErrorState, Badge } from '../components/common';
+import { Button, LoadingState, ErrorState } from '../components/common';
 import {
   LiveTelemetryGauges,
   AiPlanningInsights,
@@ -33,7 +33,7 @@ export const MonitoringPage: React.FC = () => {
   const [latestPlan, setLatestPlan] = useState<BlockPlan | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [lastRefreshed, setLastRefreshed] = useState<string>('');
+  const [, setLastRefreshed] = useState<string>('');
 
   const loadMonitoringData = useCallback(async () => {
     setIsLoading(true);
@@ -72,16 +72,9 @@ export const MonitoringPage: React.FC = () => {
         <div className="ops-header__info">
           <div className="ops-header__title-row">
             <h1 className="ops-header__title">Operational Monitoring &amp; AI Insights</h1>
-            <Badge variant="blue" statusText="LIVE TELEMETRY" dot />
           </div>
-          <p className="ops-header__desc">Continuous surveillance of planning engine health, corridor utilization, safety alerts, and AI decision insights.</p>
         </div>
         <div className="ops-header__actions">
-          {lastRefreshed && (
-            <span style={{ fontSize: 12, fontFamily: 'JetBrains Mono, monospace', color: 'var(--text-muted)' }}>
-              Refreshed: {lastRefreshed} IST
-            </span>
-          )}
           <Button variant="outline" size="sm" onClick={loadMonitoringData} isLoading={isLoading} leftIcon={<RefreshCw size={14} />}>
             Refresh Feeds
           </Button>

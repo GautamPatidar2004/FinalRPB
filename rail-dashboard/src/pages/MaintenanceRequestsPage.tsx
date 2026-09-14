@@ -98,10 +98,8 @@ export const MaintenanceRequestsPage: React.FC = () => {
       <div className="ops-header">
         <div className="ops-header__info">
           <div className="ops-header__title-row">
-            <h1 className="ops-header__title">Maintenance Block Requests</h1>
-            <span className="ops-header__pill">Operations Hub</span>
+            <h1 className="ops-header__title">Maintenance Requests</h1>
           </div>
-          <p className="ops-header__desc">Departmental track, traction (TRD), and signalling possession requests requiring block scheduling.</p>
         </div>
         <div className="ops-header__actions">
           <Button variant="outline" size="sm" onClick={loadData} isLoading={isLoading} leftIcon={<RefreshCw size={14} />}>Refresh</Button>

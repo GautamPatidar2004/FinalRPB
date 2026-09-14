@@ -88,10 +88,10 @@ export const PlanBlockTable: React.FC<PlanBlockTableProps> = ({
       {/* Header & Filter Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
         <div>
-          <h2 className="text-base font-bold text-slate-900">
+          <h2 className="text-[18.5px] font-bold text-slate-900">
             Scheduled Block Table
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-[15px] text-slate-500 mt-0.5">
             Complete schedule assignments generated from the operational planning dataset ({filteredItems.length} of {items.length} blocks).
           </p>
         </div>
@@ -105,7 +105,7 @@ export const PlanBlockTable: React.FC<PlanBlockTableProps> = ({
               placeholder="Filter by ID, asset, corridor..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 focus:bg-white w-52 transition-all"
+              className="pl-8 pr-3 py-1.5 text-[15px] bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 focus:bg-white w-52 transition-all"
             />
           </div>
 
@@ -113,7 +113,7 @@ export const PlanBlockTable: React.FC<PlanBlockTableProps> = ({
           <button
             type="button"
             onClick={() => setConflictOnly(!conflictOnly)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-[15px] font-medium border transition-colors flex items-center gap-1.5 ${
               conflictOnly
                 ? 'bg-red-50 text-red-700 border-red-300'
                 : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
@@ -138,7 +138,7 @@ export const PlanBlockTable: React.FC<PlanBlockTableProps> = ({
               key={dept}
               type="button"
               onClick={() => setSelectedDept(dept)}
-              className={`px-3 py-1 text-xs font-semibold rounded-lg whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+              className={`px-3 py-1 text-[15px] font-semibold rounded-lg whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                 isActive
                   ? 'bg-slate-900 text-white'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -146,7 +146,7 @@ export const PlanBlockTable: React.FC<PlanBlockTableProps> = ({
             >
               <span>{dept}</span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                className={`text-[11.5px] px-1.5 py-0.2 rounded-full font-mono ${
                   isActive ? 'bg-slate-700 text-slate-200' : 'bg-slate-200 text-slate-600'
                 }`}
               >
@@ -159,7 +159,7 @@ export const PlanBlockTable: React.FC<PlanBlockTableProps> = ({
 
       {/* Table */}
       {filteredItems.length === 0 ? (
-        <div className="text-center py-12 text-slate-400 text-xs">
+        <div className="text-center py-12 text-slate-400 text-[15px]">
           No block items match the selected filters.
         </div>
       ) : (
@@ -188,11 +188,11 @@ export const PlanBlockTable: React.FC<PlanBlockTableProps> = ({
                   key={item.id || item.request_id}
                   className={isSelected ? 'bg-blue-50/50' : undefined}
                 >
-                  <TableCell className="font-mono text-xs text-slate-400">
+                  <TableCell className="font-mono text-[15px] text-slate-400">
                     {idx + 1}
                   </TableCell>
 
-                  <TableCell className="font-mono text-xs font-bold text-blue-700">
+                  <TableCell className="font-mono text-[15px] font-bold text-blue-700">
                     <button
                       type="button"
                       onClick={() => onSelectBlock(item)}
@@ -209,20 +209,20 @@ export const PlanBlockTable: React.FC<PlanBlockTableProps> = ({
                     />
                   </TableCell>
 
-                  <TableCell className="font-mono text-xs text-slate-700">
+                  <TableCell className="font-mono text-[15px] text-slate-700">
                     {item.corridor_id}
                   </TableCell>
 
-                  <TableCell className="font-mono text-xs text-slate-600">
+                  <TableCell className="font-mono text-[15px] text-slate-600">
                     {item.asset_id}
                   </TableCell>
 
-                  <TableCell className="font-mono text-xs font-semibold text-slate-900 whitespace-nowrap">
+                  <TableCell className="font-mono text-[15px] font-semibold text-slate-900 whitespace-nowrap">
                     {formatMinuteToTime(item.scheduled_start_minute)} –{' '}
                     {formatMinuteToTime(item.scheduled_end_minute)}
                   </TableCell>
 
-                  <TableCell className="font-mono text-xs text-slate-600 whitespace-nowrap">
+                  <TableCell className="font-mono text-[15px] text-slate-600 whitespace-nowrap">
                     {formatDuration(item.allocated_duration_minutes)}
                   </TableCell>
 
@@ -239,7 +239,7 @@ export const PlanBlockTable: React.FC<PlanBlockTableProps> = ({
                         {item.conflict_flags.map((flag, fIdx) => (
                           <span
                             key={fIdx}
-                            className="inline-flex items-center gap-1 text-[10px] font-semibold text-red-700 bg-red-50 border border-red-200 rounded px-1.5 py-0.5"
+                            className="inline-flex items-center gap-1 text-[11.5px] font-semibold text-red-700 bg-red-50 border border-red-200 rounded px-1.5 py-0.5"
                           >
                             <AlertTriangle className="w-2.5 h-2.5" />
                             {flag}
@@ -247,7 +247,7 @@ export const PlanBlockTable: React.FC<PlanBlockTableProps> = ({
                         ))}
                       </div>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-xs text-emerald-600 font-medium">
+                      <span className="inline-flex items-center gap-1 text-[15px] text-emerald-600 font-medium">
                         <CheckCircle className="w-3.5 h-3.5" />
                         Clear
                       </span>
@@ -262,7 +262,7 @@ export const PlanBlockTable: React.FC<PlanBlockTableProps> = ({
                           variant="outline"
                           onClick={() => onModifyBlock(item)}
                           leftIcon={<Sliders className="w-3.5 h-3.5 text-blue-600" />}
-                          className="text-xs"
+                          className="text-[15px]"
                         >
                           Modify
                         </Button>
@@ -272,7 +272,7 @@ export const PlanBlockTable: React.FC<PlanBlockTableProps> = ({
                         variant="secondary"
                         onClick={() => onSelectBlock(item)}
                         leftIcon={<Eye className="w-3.5 h-3.5" />}
-                        className="text-xs"
+                        className="text-[15px]"
                       >
                         Inspect
                       </Button>

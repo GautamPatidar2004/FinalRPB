@@ -82,7 +82,7 @@ export const ModifyBlockModal: React.FC<ModifyBlockModalProps> = ({
         <div className="flex items-center gap-2">
           <Sliders className="w-4 h-4 text-blue-600" />
           <span>Modify Block Timing</span>
-          <span className="font-mono text-blue-700 text-xs px-2 py-0.5 rounded bg-blue-50 border border-blue-200">
+          <span className="font-mono text-blue-700 text-[15px] px-2 py-0.5 rounded bg-blue-50 border border-blue-200">
             {block.request_id}
           </span>
         </div>
@@ -105,7 +105,7 @@ export const ModifyBlockModal: React.FC<ModifyBlockModalProps> = ({
         </div>
       }
     >
-      <form onSubmit={handleSubmit} className="space-y-4 text-xs text-slate-700">
+      <form onSubmit={handleSubmit} className="space-y-4 text-[15px] text-slate-700">
         {error && (
           <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-800 flex items-start gap-2">
             <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
@@ -114,15 +114,15 @@ export const ModifyBlockModal: React.FC<ModifyBlockModalProps> = ({
         )}
 
         {/* Read-only Context */}
-        <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl font-mono text-[11px]">
+        <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl font-mono text-[12.5px]">
           <div>
-            <span className="block text-[10px] uppercase font-sans text-slate-400">
+            <span className="block text-[11.5px] uppercase font-sans text-slate-400">
               Corridor
             </span>
             <span className="font-semibold text-slate-800">{block.corridor_id}</span>
           </div>
           <div>
-            <span className="block text-[10px] uppercase font-sans text-slate-400">
+            <span className="block text-[11.5px] uppercase font-sans text-slate-400">
               Asset
             </span>
             <span className="font-semibold text-slate-800">{block.asset_id}</span>
@@ -132,7 +132,7 @@ export const ModifyBlockModal: React.FC<ModifyBlockModalProps> = ({
         {/* Start and End Time Inputs */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="block font-semibold text-slate-800 text-xs">
+            <label className="block font-semibold text-slate-800 text-[15px]">
               Scheduled Start (HH:MM)
             </label>
             <div className="relative">
@@ -141,16 +141,16 @@ export const ModifyBlockModal: React.FC<ModifyBlockModalProps> = ({
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
                 required
-                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-mono font-semibold focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-[15px] font-mono font-semibold focus:outline-none focus:border-blue-500"
               />
             </div>
-            <span className="text-[10px] font-mono text-slate-400">
+            <span className="text-[11.5px] font-mono text-slate-400">
               Minute {startMin} of day
             </span>
           </div>
 
           <div className="space-y-1.5">
-            <label className="block font-semibold text-slate-800 text-xs">
+            <label className="block font-semibold text-slate-800 text-[15px]">
               Scheduled End (HH:MM)
             </label>
             <div className="relative">
@@ -159,10 +159,10 @@ export const ModifyBlockModal: React.FC<ModifyBlockModalProps> = ({
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
                 required
-                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-mono font-semibold focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-[15px] font-mono font-semibold focus:outline-none focus:border-blue-500"
               />
             </div>
-            <span className="text-[10px] font-mono text-slate-400">
+            <span className="text-[11.5px] font-mono text-slate-400">
               Minute {endMin} of day
             </span>
           </div>
@@ -181,13 +181,13 @@ export const ModifyBlockModal: React.FC<ModifyBlockModalProps> = ({
 
         {/* Status Selection */}
         <div className="space-y-1.5">
-          <label className="block font-semibold text-slate-800 text-xs">
+          <label className="block font-semibold text-slate-800 text-[15px]">
             Operational Block Status
           </label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value as ItemStatus)}
-            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-[15px] font-medium focus:outline-none focus:border-blue-500"
           >
             <option value="SCHEDULED">SCHEDULED (Active track possession)</option>
             <option value="DEFERRED">DEFERRED (Postponed for later window)</option>
@@ -195,7 +195,7 @@ export const ModifyBlockModal: React.FC<ModifyBlockModalProps> = ({
           </select>
         </div>
 
-        <p className="text-[11px] text-slate-400 leading-relaxed">
+        <p className="text-[12.5px] text-slate-400 leading-relaxed">
           Saving updates will automatically invoke RailwayConstraintEngine to re-evaluate track headways and train safety clearances.
         </p>
       </form>

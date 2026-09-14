@@ -91,7 +91,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
       maxWidth="3xl"
       title={
         <div className="flex items-center gap-3">
-          <span className="font-mono text-base font-bold text-slate-900">
+          <span className="font-mono text-[18.5px] font-bold text-slate-900">
             {request.request_id}
           </span>
           <Badge
@@ -154,9 +154,9 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
         </div>
       }
     >
-      <div className="space-y-5 text-sm">
+      <div className="space-y-5 text-[16.5px]">
         {actionError && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 font-medium">
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-[15px] text-red-700 font-medium">
             {actionError}
           </div>
         )}
@@ -165,7 +165,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-lg">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <span className="text-[15px] font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-blue-600" />
                 Target Corridor / Section
               </span>
@@ -176,7 +176,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                     onClose();
                     onSelectCorridor(request.corridor_id);
                   }}
-                  className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
+                  className="text-[15px] text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
                 >
                   View Details
                   <ExternalLink className="w-3 h-3" />
@@ -187,7 +187,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
               {request.corridor_id}
             </div>
             {corridor && (
-              <p className="text-xs text-slate-600 mt-0.5">
+              <p className="text-[15px] text-slate-600 mt-0.5">
                 {corridor.name} • {corridor.length_km} km • {corridor.is_electrified ? '25kV AC Electrified' : 'Non-electrified'}
               </p>
             )}
@@ -195,7 +195,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
 
           <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-lg">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <span className="text-[15px] font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                 <Layers className="w-3.5 h-3.5 text-blue-600" />
                 Target Physical Asset
               </span>
@@ -206,7 +206,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                     onClose();
                     onSelectAsset(request.asset_id);
                   }}
-                  className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
+                  className="text-[15px] text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
                 >
                   View Asset
                   <ExternalLink className="w-3 h-3" />
@@ -217,7 +217,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
               {request.asset_id}
             </div>
             {asset && (
-              <p className="text-xs text-slate-600 mt-0.5">
+              <p className="text-[15px] text-slate-600 mt-0.5">
                 Track {asset.track_type} • KM {asset.start_km.toFixed(2)} - KM {asset.end_km.toFixed(2)}
               </p>
             )}
@@ -227,36 +227,36 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
         {/* Section 2: Feasible Time Window & Duration Visualization */}
         <div className="p-4 bg-white border border-slate-200 rounded-lg space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+            <span className="text-[15px] font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-blue-600" />
               Operational Time Window & Requested Duration
             </span>
-            <span className="text-xs font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+            <span className="text-[15px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
               Requested: {formatDuration(request.required_duration_minutes)} ({request.required_duration_minutes} mins)
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-[15px]">
             <div>
               <span className="text-slate-500 block">Earliest Start:</span>
-              <span className="font-mono font-semibold text-slate-900 text-sm">
+              <span className="font-mono font-semibold text-slate-900 text-[16.5px]">
                 {formatMinuteToTime(request.earliest_start_minute)}
               </span>
-              <span className="text-slate-400 text-[11px] block">(Min {request.earliest_start_minute})</span>
+              <span className="text-slate-400 text-[12.5px] block">(Min {request.earliest_start_minute})</span>
             </div>
             <div>
               <span className="text-slate-500 block">Latest End:</span>
-              <span className="font-mono font-semibold text-slate-900 text-sm">
+              <span className="font-mono font-semibold text-slate-900 text-[16.5px]">
                 {formatMinuteToTime(request.latest_end_minute)}
               </span>
-              <span className="text-slate-400 text-[11px] block">(Min {request.latest_end_minute})</span>
+              <span className="text-slate-400 text-[12.5px] block">(Min {request.latest_end_minute})</span>
             </div>
             <div className="col-span-2 sm:col-span-1">
               <span className="text-slate-500 block">Window Flexibility:</span>
-              <span className="font-mono font-semibold text-slate-900 text-sm">
+              <span className="font-mono font-semibold text-slate-900 text-[16.5px]">
                 {formatDuration(windowSpanMinutes)}
               </span>
-              <span className="text-slate-400 text-[11px] block">
+              <span className="text-slate-400 text-[12.5px] block">
                 {windowSpanMinutes >= request.required_duration_minutes ? 'Feasible span' : 'Tight window'}
               </span>
             </div>
@@ -264,7 +264,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
 
           {/* 24-Hour Visual Timeline Bar */}
           <div className="pt-2">
-            <div className="flex justify-between text-[10px] text-slate-400 font-mono mb-1">
+            <div className="flex justify-between text-[11.5px] text-slate-400 font-mono mb-1">
               <span>00:00</span>
               <span>06:00</span>
               <span>12:00</span>
@@ -281,7 +281,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                 title={`Allowed window: ${formatMinuteToTime(request.earliest_start_minute)} - ${formatMinuteToTime(request.latest_end_minute)}`}
               />
             </div>
-            <div className="flex justify-between items-center text-[11px] text-slate-500 mt-1.5">
+            <div className="flex justify-between items-center text-[12.5px] text-slate-500 mt-1.5">
               <span>Day timeline (0–1440m)</span>
               <span className="font-medium text-blue-700">
                 Span: {formatMinuteToTime(request.earliest_start_minute)} → {formatMinuteToTime(request.latest_end_minute)}
@@ -303,10 +303,10 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
               <Train className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
+              <span className="text-[15px] font-semibold text-slate-500 uppercase tracking-wider block">
                 Traffic Block
               </span>
-              <span className="text-sm font-bold text-slate-900">
+              <span className="text-[16.5px] font-bold text-slate-900">
                 {request.is_traffic_block_required ? 'Required (Line Closed)' : 'Not Required'}
               </span>
             </div>
@@ -323,10 +323,10 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
               <Zap className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
+              <span className="text-[15px] font-semibold text-slate-500 uppercase tracking-wider block">
                 Traction Power Block (OHE)
               </span>
-              <span className="text-sm font-bold text-slate-900">
+              <span className="text-[16.5px] font-bold text-slate-900">
                 {request.is_power_block_required ? 'Required (Power Cut)' : 'Not Required'}
               </span>
             </div>
@@ -339,31 +339,31 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
             <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-amber-900 uppercase">
+                <span className="text-[15px] font-bold text-amber-900 uppercase">
                   Linked Track / OHE Defect
                 </span>
-                <span className="px-1.5 py-0.5 font-mono text-xs font-bold bg-amber-200/80 text-amber-900 rounded">
+                <span className="px-1.5 py-0.5 font-mono text-[15px] font-bold bg-amber-200/80 text-amber-900 rounded">
                   {request.linked_defect_id}
                 </span>
                 {(request.days_overdue ?? 0) > 0 && (
-                  <span className="px-1.5 py-0.5 text-[10px] font-bold bg-red-600 text-white rounded">
+                  <span className="px-1.5 py-0.5 text-[11.5px] font-bold bg-red-600 text-white rounded">
                     {request.days_overdue} DAYS OVERDUE
                   </span>
                 )}
               </div>
-              <p className="text-xs text-amber-800 mt-1">
+              <p className="text-[15px] text-amber-800 mt-1">
                 This maintenance block is tied to active defect ticket {request.linked_defect_id}. Priority dispatch required by safety standards.
               </p>
             </div>
           </div>
         ) : (
-          <div className="p-3 bg-slate-50 border border-slate-200/70 rounded-lg text-xs text-slate-500">
+          <div className="p-3 bg-slate-50 border border-slate-200/70 rounded-lg text-[15px] text-slate-500">
             Routine departmental scheduled maintenance. No active safety defect report linked.
           </div>
         )}
 
         {/* Section 5: Audit & Timestamps */}
-        <div className="pt-2 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-3 gap-2 text-[11px] text-slate-500">
+        <div className="pt-2 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-3 gap-2 text-[12.5px] text-slate-500">
           <div>
             <span className="block text-slate-400">Created:</span>
             <span className="font-mono text-slate-700">{formatTimestamp(request.created_at)}</span>
