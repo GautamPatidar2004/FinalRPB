@@ -786,7 +786,7 @@ export const PlanningPage: React.FC = () => {
                     <TableHeaderCell>Request ID</TableHeaderCell>
                     <TableHeaderCell>Department</TableHeaderCell>
                     <TableHeaderCell>Urgency</TableHeaderCell>
-                    <TableHeaderCell>Asset ID</TableHeaderCell>
+                    <TableHeaderCell className="min-w-[200px]">Asset ID</TableHeaderCell>
                     <TableHeaderCell>Required Duration</TableHeaderCell>
                     <TableHeaderCell>Operational Window</TableHeaderCell>
                     <TableHeaderCell>Block Requisite</TableHeaderCell>
@@ -1037,8 +1037,8 @@ export const PlanningPage: React.FC = () => {
                       <TableRow>
                         <TableHeaderCell>Request ID</TableHeaderCell>
                         <TableHeaderCell>Department</TableHeaderCell>
-                        <TableHeaderCell>Asset ID</TableHeaderCell>
-                        <TableHeaderCell>Scheduled Slot</TableHeaderCell>
+                        <TableHeaderCell className="min-w-[200px]">Asset ID</TableHeaderCell>
+                        <TableHeaderCell>Scheduled Window</TableHeaderCell>
                         <TableHeaderCell>Allocated Duration</TableHeaderCell>
                         <TableHeaderCell>Status</TableHeaderCell>
                         <TableHeaderCell>Safety / Conflict Flags</TableHeaderCell>
