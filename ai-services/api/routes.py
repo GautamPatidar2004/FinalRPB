@@ -26,6 +26,7 @@ from api.v1 import (
     ingest_router,
     dataset_router,
     dashboard_router,
+    explain_router,
 )
 
 router = APIRouter()
@@ -41,6 +42,7 @@ router.include_router(availability_router)
 router.include_router(ingest_router)
 router.include_router(dataset_router)
 router.include_router(dashboard_router)
+router.include_router(explain_router)
 
 planning_engine = PlanningEngine()
 default_pipeline = BasePipeline(planning_engine=planning_engine)

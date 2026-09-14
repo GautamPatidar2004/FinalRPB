@@ -54,10 +54,10 @@ def test_effective_supabase_key_priority():
     s2 = Settings(supabase_anon_key="anon-key")
     assert s2.effective_supabase_key == "anon-key"
 
-    s3 = Settings(supabase_key="gen-key")
+    s3 = Settings(supabase_key="gen-key", supabase_anon_key=None, supabase_service_role_key=None)
     assert s3.effective_supabase_key == "gen-key"
 
-    s4 = Settings()
+    s4 = Settings(supabase_key=None, supabase_anon_key=None, supabase_service_role_key=None)
     assert s4.effective_supabase_key is None
 
 

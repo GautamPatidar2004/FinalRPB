@@ -9,9 +9,10 @@ import {
   CalendarCheck,
   CheckCircle2,
   Cpu,
+  HelpCircle,
 } from 'lucide-react';
-import type { BlockPlan } from '../../types';
-import { Button, Badge } from '../common';
+import type { BlockPlan, ProviderMetadata } from '../../types';
+import { Button, Badge, ProviderBadge } from '../common';
 import { formatTimestamp } from '../../utils';
 
 export interface PlanSummaryHeaderProps {
@@ -19,6 +20,8 @@ export interface PlanSummaryHeaderProps {
   isValidating?: boolean;
   onRevalidate: () => void;
   onRefresh: () => void;
+  onExplain?: () => void;
+  providerMetadata?: ProviderMetadata | null;
   hardViolationsCount?: number;
   fromPlanning?: boolean;
 }
@@ -28,6 +31,8 @@ export const PlanSummaryHeader: React.FC<PlanSummaryHeaderProps> = ({
   isValidating = false,
   onRevalidate,
   onRefresh,
+  onExplain,
+  providerMetadata,
   hardViolationsCount = 0,
 }) => {
   const navigate = useNavigate();
@@ -66,6 +71,17 @@ export const PlanSummaryHeader: React.FC<PlanSummaryHeaderProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
+          {onExplain && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onExplain}
+              leftIcon={<HelpCircle className="w-3.5 h-3.5 text-blue-600" />}
+              className="border-blue-200 text-blue-700 bg-blue-50/70 hover:bg-blue-100 font-semibold"
+            >
+              Why this plan?
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"
@@ -96,6 +112,7 @@ export const PlanSummaryHeader: React.FC<PlanSummaryHeaderProps> = ({
               {plan.plan_id}
             </span>
             <Badge statusText={plan.status} dot />
+            <ProviderBadge metadata={providerMetadata} compact />
             {isFeasible && !hasWarnings ? (
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[15px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />

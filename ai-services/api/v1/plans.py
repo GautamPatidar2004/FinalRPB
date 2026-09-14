@@ -22,6 +22,7 @@ from schemas.backend import (
 from schemas.optimization import OptimizedPlanResult
 from planning.engine import PlanningEngine
 from planning.optimizer import RailwayPlanOptimizer
+from explainability.engine import ExplainabilityEngine
 
 router = APIRouter(prefix="/plans", tags=["Block Plans"])
 
@@ -30,6 +31,10 @@ planning_engine = PlanningEngine()
 plan_optimizer = RailwayPlanOptimizer(
     priority_model=planning_engine.priority_model,
     evaluator=planning_engine.evaluator,
+    constraint_engine=planning_engine.constraint_engine,
+)
+explainability_engine = ExplainabilityEngine(
+    priority_model=planning_engine.priority_model,
     constraint_engine=planning_engine.constraint_engine,
 )
 
@@ -177,7 +182,11 @@ def generate_and_persist_plan(payload: PlanGenerationRequest):
             detail=f"Database persistence failed: {str(exc)}"
         )
 
-    # 6. Construct normalized application-facing response
+    # 6. Generate explainability output and attach to plan record
+    plan_explanation = explainability_engine.explain_plan(dataset, opt_result, planning_run_id=plan_id)
+    repository.save_plan_explanation(plan_id, plan_explanation.model_dump())
+
+    # 7. Construct normalized application-facing response
     scheduled_blocks_resp = [
         BlockPlanItemResponse(
             id=it.get("id"),
@@ -210,6 +219,7 @@ def generate_and_persist_plan(payload: PlanGenerationRequest):
         decision_log=[d.model_dump() for d in opt_result.decision_log],
         unresolved_requests=[u.model_dump() for u in opt_result.unresolved_requirements],
         replanning_applied=opt_result.replanning_applied,
+        explanation=plan_explanation.model_dump(),
     )
 
 

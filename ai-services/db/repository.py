@@ -55,6 +55,7 @@ class RailwayRepository:
         self._local_profiles: Dict[str, Dict[str, Any]] = {}
         self._local_plans: Dict[str, Dict[str, Any]] = {}
         self._local_plan_items: Dict[str, List[Dict[str, Any]]] = {}
+        self._local_explanations: Dict[str, Dict[str, Any]] = {}
 
         # Seed initial operational data in local store if empty
         self.seed_demo_operational_data()
@@ -85,10 +86,10 @@ class RailwayRepository:
                 "updated_at": datetime.now(timezone.utc).isoformat(),
             }
 
-    def seed_demo_operational_data(self):
+    def seed_demo_operational_data(self, force: bool = False):
         """Seed initial operational demo data for development if empty."""
         self._ensure_default_seed()
-        if not self._local_assets:
+        if force or not self._local_assets:
             now = datetime.now(timezone.utc).isoformat()
             demo_assets = [
                 {"asset_id": "AST-TRK-101", "corridor_id": "COR-NDLS-GZB", "department": "Engineering", "start_km": 0.0, "end_km": 15.0, "track_type": "UP"},
@@ -107,7 +108,7 @@ class RailwayRepository:
             for ast in demo_assets:
                 self._local_assets[ast["asset_id"]] = {**ast, "created_at": now, "updated_at": now}
 
-        if not self._local_trains:
+        if force or not self._local_trains:
             now = datetime.now(timezone.utc).isoformat()
             demo_trains = [
                 {"train_id": "TRN-12002-SHATABDI", "train_type": "PASSENGER_EXPRESS", "corridor_id": "COR-NDLS-GZB", "entry_minute": 360, "exit_minute": 420, "priority_level": 1},
@@ -118,7 +119,7 @@ class RailwayRepository:
             for trn in demo_trains:
                 self._local_trains[trn["train_id"]] = {**trn, "created_at": now, "updated_at": now}
 
-        if not self._local_requests:
+        if force or not self._local_requests:
             now = datetime.now(timezone.utc).isoformat()
             demo_requests = [
                 # COR-NDLS-GZB Workload (multi-departmental, distributed windows)
@@ -621,6 +622,20 @@ class RailwayRepository:
                     it["conflict_flags"] = items_conflict_map[it["request_id"]]
                     it["updated_at"] = now
         return self.get_plan(plan_id)
+
+    def save_plan_explanation(self, plan_id: str, explanation: Dict[str, Any]) -> None:
+        self._local_explanations[plan_id] = explanation
+        if plan_id in self._local_plans:
+            eval_s = self._local_plans[plan_id].setdefault("evaluation_summary", {})
+            eval_s["unified_explanation"] = explanation
+
+    def get_plan_explanation(self, plan_id: str) -> Optional[Dict[str, Any]]:
+        if plan_id in self._local_explanations:
+            return self._local_explanations[plan_id]
+        plan = self.get_plan(plan_id, include_items=False)
+        if plan and "evaluation_summary" in plan:
+            return plan["evaluation_summary"].get("unified_explanation")
+        return None
 
     def get_plan_item(self, plan_id: str, item_id: str) -> Optional[Dict[str, Any]]:
         plan = self.get_plan(plan_id, include_items=True)

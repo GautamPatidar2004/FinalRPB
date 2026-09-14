@@ -266,6 +266,7 @@ class PlanGenerationResponse(BaseModel):
     decision_log: List[Dict[str, Any]] = Field(default_factory=list)
     unresolved_requests: List[Dict[str, Any]] = Field(default_factory=list)
     replanning_applied: bool = False
+    explanation: Optional[Dict[str, Any]] = Field(default=None, description="Attached unified explainability output")
 
 
 # ==========================================

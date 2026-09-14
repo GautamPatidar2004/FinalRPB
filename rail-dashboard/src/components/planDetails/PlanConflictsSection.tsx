@@ -5,6 +5,7 @@ import {
   XCircle,
   CheckCircle2,
   ChevronRight,
+  HelpCircle,
 } from 'lucide-react';
 import type { ConstraintViolation } from '../../types';
 import { Badge, Button } from '../common';
@@ -15,6 +16,7 @@ export interface PlanConflictsSectionProps {
   isFeasible?: boolean;
   summaryText?: string;
   onInspectBlockByRequestId?: (requestId: string) => void;
+  onExplainConflict?: (requestId?: string, constraintType?: string) => void;
 }
 
 export const PlanConflictsSection: React.FC<PlanConflictsSectionProps> = ({
@@ -22,6 +24,7 @@ export const PlanConflictsSection: React.FC<PlanConflictsSectionProps> = ({
   totalConflicts,
   summaryText,
   onInspectBlockByRequestId,
+  onExplainConflict,
 }) => {
   const hasNoConflicts = totalConflicts === 0 && conflicts.length === 0;
 
@@ -90,17 +93,30 @@ export const PlanConflictsSection: React.FC<PlanConflictsSectionProps> = ({
                   <Badge variant="red" statusText={v.severity || 'HARD'} />
                 </div>
 
-                {v.request_id && onInspectBlockByRequestId && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onInspectBlockByRequestId(v.request_id!)}
-                    rightIcon={<ChevronRight className="w-3 h-3" />}
-                    className="text-[15px]"
-                  >
-                    Inspect Block {v.request_id}
-                  </Button>
-                )}
+                <div className="flex items-center gap-2">
+                  {v.request_id && onInspectBlockByRequestId && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onInspectBlockByRequestId(v.request_id!)}
+                      rightIcon={<ChevronRight className="w-3 h-3" />}
+                      className="text-[14px]"
+                    >
+                      Inspect Block {v.request_id}
+                    </Button>
+                  )}
+                  {onExplainConflict && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onExplainConflict(v.request_id || undefined, v.constraint_type)}
+                      leftIcon={<HelpCircle className="w-3.5 h-3.5 text-red-600" />}
+                      className="text-[14px] border-red-200 text-red-700 bg-white hover:bg-red-50"
+                    >
+                      Explain Conflict
+                    </Button>
+                  )}
+                </div>
               </div>
 
               <p className="text-[15px] font-medium text-slate-800 leading-relaxed">

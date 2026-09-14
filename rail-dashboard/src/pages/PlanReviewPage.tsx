@@ -5,7 +5,7 @@ import {
   Layers,
   ArrowRight,
 } from 'lucide-react';
-import { planningService, operationalService } from '../services';
+import { planningService, operationalService, explainService } from '../services';
 import type {
   BlockPlan,
   BlockPlanItem,
@@ -14,6 +14,7 @@ import type {
   PlanConflictResponse,
   ItemStatus,
   Train,
+  UnifiedPlanExplanation,
 } from '../types';
 import {
   Button,
@@ -34,6 +35,7 @@ import {
   PlanReviewActionBar,
   ReviewActionModal,
   ModifyBlockModal,
+  DecisionExplanationModal,
 } from '../components/planDetails';
 import { formatTimestamp } from '../utils';
 
@@ -73,6 +75,11 @@ export const PlanReviewPage: React.FC = () => {
   const [editingBlock, setEditingBlock] = useState<BlockPlanItem | null>(null);
   const [isModifyModalOpen, setIsModifyModalOpen] = useState<boolean>(false);
   const [isSavingBlock, setIsSavingBlock] = useState<boolean>(false);
+
+  // Explainability state (Prompt 1 & Prompt 2 integration)
+  const [isExplainModalOpen, setIsExplainModalOpen] = useState<boolean>(false);
+  const [explainRequestId, setExplainRequestId] = useState<string | null>(null);
+  const [planExplanation, setPlanExplanation] = useState<UnifiedPlanExplanation | null>(null);
 
   // All Plans List (when viewing /review overview)
   const [allPlans, setAllPlans] = useState<BlockPlan[]>([]);
@@ -120,6 +127,12 @@ export const PlanReviewPage: React.FC = () => {
           setConflictSummary(existingFeas.summary || '');
         }
       }
+
+      // Fetch unified plan explainability in background
+      explainService
+        .getPlanExplanation({ plan_id: id })
+        .then((exp) => setPlanExplanation(exp))
+        .catch(() => {});
     } catch (err: any) {
       setPlanError(err?.message || 'Error communicating with Railway Block Planning backend.');
     } finally {
@@ -329,6 +342,22 @@ export const PlanReviewPage: React.FC = () => {
     return match?.rationale;
   }, [inspectedBlock, selectedPlan]);
 
+  // Explainability action handlers
+  const handleOpenExplainPlan = () => {
+    setExplainRequestId(null);
+    setIsExplainModalOpen(true);
+  };
+
+  const handleOpenExplainBlock = (block: BlockPlanItem) => {
+    setExplainRequestId(block.request_id);
+    setIsExplainModalOpen(true);
+  };
+
+  const handleOpenExplainConflict = (requestId?: string) => {
+    setExplainRequestId(requestId || null);
+    setIsExplainModalOpen(true);
+  };
+
   const isPlanImmutable = selectedPlan?.status === 'APPROVED';
 
   // =============================================================
@@ -372,6 +401,8 @@ export const PlanReviewPage: React.FC = () => {
           isValidating={isValidating}
           onRevalidate={handleRevalidate}
           onRefresh={() => loadPlanDetails(selectedPlan.plan_id)}
+          onExplain={handleOpenExplainPlan}
+          providerMetadata={planExplanation?.provider_metadata}
           hardViolationsCount={totalConflicts}
         />
 
@@ -397,11 +428,12 @@ export const PlanReviewPage: React.FC = () => {
           selectedBlockId={inspectedBlock?.id || inspectedBlock?.request_id}
         />
 
-        {/* 5. Detailed Block Table (with Modify Action) */}
+        {/* 5. Detailed Block Table (with Modify Action & AI Explain) */}
         <PlanBlockTable
           items={items}
           onSelectBlock={handleSelectBlock}
           onModifyBlock={handleOpenModifyModal}
+          onExplainBlock={handleOpenExplainBlock}
           isImmutable={isPlanImmutable}
           selectedBlockId={inspectedBlock?.id || inspectedBlock?.request_id}
         />
@@ -412,6 +444,7 @@ export const PlanReviewPage: React.FC = () => {
           totalConflicts={totalConflicts}
           summaryText={conflictSummary}
           onInspectBlockByRequestId={handleInspectBlockByRequestId}
+          onExplainConflict={handleOpenExplainConflict}
         />
 
         {/* 7. Railway Safety Rules & Optimization Validation */}
@@ -429,6 +462,14 @@ export const PlanReviewPage: React.FC = () => {
           onModify={
             inspectedBlock && !isPlanImmutable
               ? () => handleOpenModifyModal(inspectedBlock)
+              : undefined
+          }
+          onExplain={
+            inspectedBlock
+              ? () => {
+                  setIsModalOpen(false);
+                  handleOpenExplainBlock(inspectedBlock);
+                }
               : undefined
           }
           isImmutable={isPlanImmutable}
@@ -456,6 +497,15 @@ export const PlanReviewPage: React.FC = () => {
           planTitle={selectedPlan.title}
           onConfirm={handleConfirmReviewAction}
           isSubmitting={isReviewSubmitting}
+        />
+
+        {/* 11. AI Decision Explainability Modal (Prompt 1 & 2) */}
+        <DecisionExplanationModal
+          isOpen={isExplainModalOpen}
+          onClose={() => setIsExplainModalOpen(false)}
+          planId={selectedPlan.plan_id}
+          explanation={planExplanation}
+          targetRequestId={explainRequestId}
         />
       </div>
     );

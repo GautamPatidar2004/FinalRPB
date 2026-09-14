@@ -7,18 +7,19 @@ import {
   CheckCircle,
   FileText,
   Shield,
+  HelpCircle,
+  Sliders,
 } from 'lucide-react';
 import type { BlockPlanItem } from '../../types';
 import { Modal, Badge, Button } from '../common';
 import { formatMinuteToTime, formatDuration } from '../../utils';
-
-import { Sliders } from 'lucide-react';
 
 export interface BlockDetailModalProps {
   block: BlockPlanItem | null;
   isOpen: boolean;
   onClose: () => void;
   onModify?: () => void;
+  onExplain?: () => void;
   isImmutable?: boolean;
   decisionRationale?: string;
 }
@@ -28,6 +29,7 @@ export const BlockDetailModal: React.FC<BlockDetailModalProps> = ({
   isOpen,
   onClose,
   onModify,
+  onExplain,
   isImmutable = false,
   decisionRationale,
 }) => {
@@ -54,7 +56,20 @@ export const BlockDetailModal: React.FC<BlockDetailModalProps> = ({
       maxWidth="lg"
       footer={
         <div className="flex items-center justify-between w-full">
-          <div>
+          <div className="flex items-center gap-2">
+            {onExplain && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  onExplain();
+                }}
+                leftIcon={<HelpCircle className="w-3.5 h-3.5 text-blue-600" />}
+                className="text-[14px] text-blue-700 border-blue-200 bg-blue-50/50 hover:bg-blue-100"
+              >
+                Why This Decision?
+              </Button>
+            )}
             {onModify && !isImmutable && (
               <Button
                 variant="outline"

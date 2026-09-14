@@ -8,6 +8,7 @@ from .availability import router as availability_router
 from .ingest import router as ingest_router
 from .dataset import router as dataset_router
 from .dashboard import router as dashboard_router
+from .explain import router as explain_router
 
 __all__ = [
     "corridors_router",
@@ -20,4 +21,5 @@ __all__ = [
     "ingest_router",
     "dataset_router",
     "dashboard_router",
+    "explain_router",
 ]

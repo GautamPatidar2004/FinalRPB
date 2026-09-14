@@ -5,6 +5,7 @@ import {
   CheckCircle,
   Eye,
   Sliders,
+  HelpCircle,
 } from 'lucide-react';
 import type { BlockPlanItem, Department } from '../../types';
 import {
@@ -23,6 +24,7 @@ export interface PlanBlockTableProps {
   items: BlockPlanItem[];
   onSelectBlock: (block: BlockPlanItem) => void;
   onModifyBlock?: (block: BlockPlanItem) => void;
+  onExplainBlock?: (block: BlockPlanItem) => void;
   isImmutable?: boolean;
   selectedBlockId?: string;
 }
@@ -31,6 +33,7 @@ export const PlanBlockTable: React.FC<PlanBlockTableProps> = ({
   items,
   onSelectBlock,
   onModifyBlock,
+  onExplainBlock,
   isImmutable = false,
   selectedBlockId,
 }) => {
@@ -256,6 +259,18 @@ export const PlanBlockTable: React.FC<PlanBlockTableProps> = ({
 
                   <TableCell className="text-right whitespace-nowrap">
                     <div className="flex items-center justify-end gap-1.5">
+                      {onExplainBlock && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => onExplainBlock(item)}
+                          leftIcon={<HelpCircle className="w-3.5 h-3.5 text-blue-600" />}
+                          className="text-[14px] text-blue-700 border-blue-200 bg-blue-50/50 hover:bg-blue-100"
+                          title="Why this decision & window?"
+                        >
+                          Why?
+                        </Button>
+                      )}
                       {onModifyBlock && !isImmutable && (
                         <Button
                           size="sm"

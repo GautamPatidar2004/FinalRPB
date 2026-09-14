@@ -8,3 +8,6 @@ export * from './BlockDetailModal';
 export * from './PlanReviewActionBar';
 export * from './ReviewActionModal';
 export * from './ModifyBlockModal';
+export * from './ShapAttributionCard';
+export * from './DecisionTraceStages';
+export * from './DecisionExplanationModal';
