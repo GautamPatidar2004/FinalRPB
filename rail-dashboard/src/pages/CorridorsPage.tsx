@@ -73,9 +73,7 @@ export const CorridorsPage: React.FC = () => {
         <div className="ops-header__info">
           <div className="ops-header__title-row">
             <h1 className="ops-header__title">Corridors &amp; Operational Availability</h1>
-            <span className="ops-header__pill">Network Capacity</span>
           </div>
-          <p className="ops-header__desc">Section lengths, 24-hour maintenance operating windows, parallel work gang capacities, and timetable train density.</p>
         </div>
         <div className="ops-header__actions">
           <Button variant="outline" size="sm" onClick={loadData} isLoading={isLoading} leftIcon={<RefreshCw size={14} />}>Refresh</Button>

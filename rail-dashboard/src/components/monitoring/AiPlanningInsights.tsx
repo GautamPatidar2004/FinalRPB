@@ -22,8 +22,8 @@ export const AiPlanningInsights: React.FC<AiPlanningInsightsProps> = ({ latestPl
     return (
       <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-[0_2px_12px_rgba(15,23,42,0.08),0_1px_3px_rgba(15,23,42,0.05)] text-center space-y-3">
         <Sparkles className="w-6 h-6 text-slate-400 mx-auto" />
-        <h3 className="text-sm font-semibold text-slate-800">No AI Insights Available</h3>
-        <p className="text-xs text-slate-500 max-w-sm mx-auto">
+        <h3 className="text-[16.5px] font-semibold text-slate-800">No AI Insights Available</h3>
+        <p className="text-sm text-slate-500 max-w-sm mx-auto">
           Generate a candidate plan in the Planning Workspace to surface deterministic AI optimization recommendations and factor evaluations.
         </p>
         <Button
@@ -63,7 +63,7 @@ export const AiPlanningInsights: React.FC<AiPlanningInsightsProps> = ({ latestPl
               statusText={latestPlan.is_feasible ? 'FEASIBLE' : 'HARD CONFLICTS'}
             />
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-sm text-slate-500 mt-0.5">
             Real optimization signals derived from plan{' '}
             <span className="font-mono font-bold text-blue-700">{latestPlan.plan_id}</span> ({latestPlan.selected_strategy || 'Default'})
           </p>
@@ -74,7 +74,7 @@ export const AiPlanningInsights: React.FC<AiPlanningInsightsProps> = ({ latestPl
           variant="outline"
           onClick={() => navigate(`/review/${latestPlan.plan_id}`)}
           rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-          className="text-xs"
+          className="text-sm"
         >
           Inspect Plan Details
         </Button>
@@ -93,7 +93,7 @@ export const AiPlanningInsights: React.FC<AiPlanningInsightsProps> = ({ latestPl
               {strengths.map((st, idx) => (
                 <div
                   key={idx}
-                  className="p-3 bg-emerald-50/60 border border-emerald-200 rounded-xl text-xs text-emerald-900 flex items-start gap-2.5 font-medium leading-relaxed"
+                  className="p-3 bg-emerald-50/60 border border-emerald-200 rounded-xl text-sm text-emerald-900 flex items-start gap-2.5 font-medium leading-relaxed"
                 >
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                   <span>{st}</span>
@@ -101,7 +101,7 @@ export const AiPlanningInsights: React.FC<AiPlanningInsightsProps> = ({ latestPl
               ))}
             </div>
           ) : (
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-500">
+            <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-500">
               Zero optimization penalties noted; all hard constraints met.
             </div>
           )}
@@ -118,7 +118,7 @@ export const AiPlanningInsights: React.FC<AiPlanningInsightsProps> = ({ latestPl
               {penalties.map((pen, idx) => (
                 <div
                   key={idx}
-                  className="p-3 bg-amber-50/60 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-start gap-2.5 font-medium leading-relaxed"
+                  className="p-3 bg-amber-50/60 border border-amber-200 rounded-xl text-sm text-amber-900 flex items-start gap-2.5 font-medium leading-relaxed"
                 >
                   <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                   <span>{pen}</span>
@@ -126,7 +126,7 @@ export const AiPlanningInsights: React.FC<AiPlanningInsightsProps> = ({ latestPl
               ))}
             </div>
           ) : (
-            <div className="p-3 bg-emerald-50/50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
+            <div className="p-3 bg-emerald-50/50 border border-emerald-200 rounded-xl text-sm text-emerald-800 flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />
               <span>No scheduling trade-off penalties registered for this plan.</span>
             </div>
@@ -149,7 +149,7 @@ export const AiPlanningInsights: React.FC<AiPlanningInsightsProps> = ({ latestPl
               return (
                 <div
                   key={key}
-                  className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"
+                  className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm"
                 >
                   <span className="block text-[10px] text-slate-400 font-medium truncate" title={label}>
                     {label}
@@ -171,7 +171,7 @@ export const AiPlanningInsights: React.FC<AiPlanningInsightsProps> = ({ latestPl
             <Cpu className="w-3.5 h-3.5 text-blue-600" />
             AI Decision Rationale Samples
           </span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
             {decisionLog.slice(0, 2).map((dec, idx) => (
               <div
                 key={idx}
@@ -181,7 +181,7 @@ export const AiPlanningInsights: React.FC<AiPlanningInsightsProps> = ({ latestPl
                   <span className="font-bold text-blue-700">{dec.request_id}</span>
                   <span>{dec.decision_type}</span>
                 </div>
-                <p className="font-sans text-slate-700 text-xs font-medium">
+                <p className="font-sans text-slate-700 text-sm font-medium">
                   {dec.rationale}
                 </p>
               </div>

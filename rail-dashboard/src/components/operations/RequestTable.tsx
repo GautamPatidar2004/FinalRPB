@@ -208,7 +208,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
                 setCurrentPage(1);
               }}
               placeholder="Search by Request ID, corridor, asset, or defect..."
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors"
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[15px] text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors"
             />
           </div>
 
@@ -226,7 +226,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
         </div>
 
         {/* Dropdown Filters */}
-        <div className="flex flex-wrap items-center gap-2.5 pt-2 border-t border-slate-100 text-xs">
+        <div className="flex flex-wrap items-center gap-2.5 pt-2 border-t border-slate-100 text-[15px]">
           <div className="flex items-center gap-1.5 text-slate-500 font-medium">
             <Filter className="w-3.5 h-3.5 text-slate-400" />
             <span>Filter:</span>
@@ -325,7 +325,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
             <button
               type="button"
               onClick={handleResetFilters}
-              className="text-xs text-blue-600 hover:text-blue-800 font-medium ml-auto"
+              className="text-[15px] text-blue-600 hover:text-blue-800 font-medium ml-auto"
             >
               Reset Filters
             </button>
@@ -412,17 +412,17 @@ export const RequestTable: React.FC<RequestTableProps> = ({
                   {/* Request ID & Defect Badge */}
                   <TableCell>
                     <div className="space-y-1">
-                      <span className="font-mono text-xs font-bold text-slate-900 block">
+                      <span className="font-mono text-[15px] font-bold text-slate-900 block">
                         {req.request_id}
                       </span>
                       {req.linked_defect_id && (
                         <div className="flex items-center gap-1">
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-bold font-mono border border-amber-200">
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-[11.5px] font-bold font-mono border border-amber-200">
                             <AlertTriangle className="w-2.5 h-2.5 text-amber-600" />
                             {req.linked_defect_id}
                           </span>
                           {(req.days_overdue ?? 0) > 0 && (
-                            <span className="px-1 py-0.2 bg-red-600 text-white rounded text-[9px] font-bold">
+                            <span className="px-1 py-0.2 bg-red-600 text-white rounded text-[10.5px] font-bold">
                               OVERDUE
                             </span>
                           )}
@@ -433,13 +433,13 @@ export const RequestTable: React.FC<RequestTableProps> = ({
 
                   {/* Department */}
                   <TableCell>
-                    <span className="text-xs font-medium text-slate-800">
+                    <span className="text-[15px] font-medium text-slate-800">
                       {req.department}
                     </span>
                     <div className="flex items-center gap-1 mt-0.5">
                       {req.is_traffic_block_required && (
                         <span
-                          className="text-[10px] text-slate-500 flex items-center gap-0.5"
+                          className="text-[11.5px] text-slate-500 flex items-center gap-0.5"
                           title="Traffic block required"
                         >
                           <Train className="w-3 h-3 text-slate-400" />
@@ -448,7 +448,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
                       )}
                       {req.is_power_block_required && (
                         <span
-                          className="text-[10px] text-blue-600 flex items-center gap-0.5 font-medium"
+                          className="text-[11.5px] text-blue-600 flex items-center gap-0.5 font-medium"
                           title="Power block required"
                         >
                           <Zap className="w-3 h-3 text-blue-500" />
@@ -460,7 +460,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
 
                   {/* Corridor & Asset Cross Link */}
                   <TableCell>
-                    <div className="space-y-0.5 text-xs">
+                    <div className="space-y-0.5 text-[15px]">
                       <div>
                         {onSelectCorridor ? (
                           <button
@@ -488,13 +488,13 @@ export const RequestTable: React.FC<RequestTableProps> = ({
                               e.stopPropagation();
                               onSelectAsset(req.asset_id);
                             }}
-                            className="font-mono text-[11px] text-slate-500 hover:text-slate-800 hover:underline"
+                            className="font-mono text-[12.5px] text-slate-500 hover:text-slate-800 hover:underline"
                             title="Inspect asset"
                           >
                             AST: {req.asset_id}
                           </button>
                         ) : (
-                          <span className="font-mono text-[11px] text-slate-500">
+                          <span className="font-mono text-[12.5px] text-slate-500">
                             AST: {req.asset_id}
                           </span>
                         )}
@@ -505,13 +505,13 @@ export const RequestTable: React.FC<RequestTableProps> = ({
                   {/* Time Window */}
                   <TableCell>
                     <div className="space-y-0.5">
-                      <div className="flex items-center gap-1 font-mono text-xs font-semibold text-slate-800">
+                      <div className="flex items-center gap-1 font-mono text-[15px] font-semibold text-slate-800">
                         <Clock className="w-3 h-3 text-slate-400" />
                         <span>{formatMinuteToTime(req.earliest_start_minute)}</span>
                         <span className="text-slate-400">→</span>
                         <span>{formatMinuteToTime(req.latest_end_minute)}</span>
                       </div>
-                      <span className="text-[10px] text-slate-400 font-mono block">
+                      <span className="text-[11.5px] text-slate-400 font-mono block">
                         Min {req.earliest_start_minute}–{req.latest_end_minute}
                       </span>
                     </div>
@@ -519,10 +519,10 @@ export const RequestTable: React.FC<RequestTableProps> = ({
 
                   {/* Duration */}
                   <TableCell>
-                    <span className="font-mono text-xs font-semibold text-slate-800">
+                    <span className="font-mono text-[15px] font-semibold text-slate-800">
                       {formatDuration(req.required_duration_minutes)}
                     </span>
-                    <span className="text-[10px] text-slate-400 block font-mono">
+                    <span className="text-[11.5px] text-slate-400 block font-mono">
                       {req.required_duration_minutes}m
                     </span>
                   </TableCell>
@@ -592,7 +592,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
           </Table>
 
           {/* Pagination Controls */}
-          <div className="flex items-center justify-between text-xs text-slate-600 px-2 pt-2">
+          <div className="flex items-center justify-between text-[15px] text-slate-600 px-2 pt-2">
             <div>
               Showing{' '}
               <span className="font-semibold text-slate-900">

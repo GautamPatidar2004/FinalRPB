@@ -91,7 +91,7 @@ export const ReviewActionModal: React.FC<ReviewActionModalProps> = ({
         </div>
       }
     >
-      <form onSubmit={handleSubmit} className="space-y-4 text-xs text-slate-700">
+      <form onSubmit={handleSubmit} className="space-y-4 text-[15px] text-slate-700">
         {error && (
           <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-800 flex items-start gap-2">
             <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
@@ -118,7 +118,7 @@ export const ReviewActionModal: React.FC<ReviewActionModalProps> = ({
                 ? 'Authorized Final Approval'
                 : 'Plan Rejection & Work Order Deferral'}
             </p>
-            <p className="text-[11px] leading-relaxed opacity-90">
+            <p className="text-[12.5px] leading-relaxed opacity-90">
               {isApprove
                 ? 'Approving locks this block schedule into the Indian Railways repository. Once approved, maintenance blocks are finalized and become immutable for live dispatch.'
                 : 'Rejecting this plan marks all included block requests as unassigned. You must provide an operational rationale for audit logging.'}
@@ -128,7 +128,7 @@ export const ReviewActionModal: React.FC<ReviewActionModalProps> = ({
 
         {/* Reviewer Identifier */}
         <div className="space-y-1.5">
-          <label className="block font-semibold text-slate-800 text-xs flex items-center gap-1.5">
+          <label className="block font-semibold text-slate-800 text-[15px] flex items-center gap-1.5">
             <User className="w-3.5 h-3.5 text-slate-400" />
             Reviewer Designation / Name
           </label>
@@ -137,13 +137,13 @@ export const ReviewActionModal: React.FC<ReviewActionModalProps> = ({
             value={reviewer}
             onChange={(e) => setReviewer(e.target.value)}
             placeholder="e.g. Chief Operations Controller · Mumbai Division"
-            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-[15px] font-medium focus:outline-none focus:border-blue-500"
           />
         </div>
 
         {/* Comment / Rejection Reason */}
         <div className="space-y-1.5">
-          <label className="block font-semibold text-slate-800 text-xs">
+          <label className="block font-semibold text-slate-800 text-[15px]">
             {isApprove ? 'Review Comments (Optional)' : 'Rejection Reason (Required)'}
           </label>
           <textarea
@@ -156,7 +156,7 @@ export const ReviewActionModal: React.FC<ReviewActionModalProps> = ({
                 : 'Specify operational reason for rejection (e.g. conflicting freight priority, crew unavailability)...'
             }
             required={!isApprove}
-            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-[15px] font-medium focus:outline-none focus:border-blue-500"
           />
         </div>
       </form>

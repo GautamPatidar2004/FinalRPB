@@ -159,10 +159,10 @@ export const PlanReviewPage: React.FC = () => {
       setSelectedPlan((prev) =>
         prev
           ? {
-              ...prev,
-              is_feasible: valRes.is_feasible,
-              overall_score: valRes.overall_score ?? prev.overall_score,
-            }
+            ...prev,
+            is_feasible: valRes.is_feasible,
+            overall_score: valRes.overall_score ?? prev.overall_score,
+          }
           : prev
       );
     } catch (err: any) {
@@ -187,13 +187,13 @@ export const PlanReviewPage: React.FC = () => {
       setSelectedPlan((prev) =>
         prev
           ? {
-              ...prev,
-              status: res.status,
-              evaluation_summary: {
-                ...(prev.evaluation_summary || {}),
-                review_history: res.review_history,
-              },
-            }
+            ...prev,
+            status: res.status,
+            evaluation_summary: {
+              ...(prev.evaluation_summary || {}),
+              review_history: res.review_history,
+            },
+          }
           : prev
       );
     } catch (err: any) {
@@ -226,16 +226,16 @@ export const PlanReviewPage: React.FC = () => {
       setSelectedPlan((prev) =>
         prev
           ? {
-              ...prev,
-              status: res.status,
-              approved_by: res.approved_by || prev.approved_by,
-              approved_at: res.approved_at || prev.approved_at,
-              rejection_reason: res.rejection_reason || prev.rejection_reason,
-              evaluation_summary: {
-                ...(prev.evaluation_summary || {}),
-                review_history: res.review_history,
-              },
-            }
+            ...prev,
+            status: res.status,
+            approved_by: res.approved_by || prev.approved_by,
+            approved_at: res.approved_at || prev.approved_at,
+            rejection_reason: res.rejection_reason || prev.rejection_reason,
+            evaluation_summary: {
+              ...(prev.evaluation_summary || {}),
+              review_history: res.review_history,
+            },
+          }
           : prev
       );
       setReviewAction(null);
@@ -278,7 +278,7 @@ export const PlanReviewPage: React.FC = () => {
     } else if (navState?.plan) {
       setSelectedPlan(navState.plan);
       // Also fetch trains and conflicts for it
-      operationalService.getTrains().then(setTrains).catch(() => {});
+      operationalService.getTrains().then(setTrains).catch(() => { });
       planningService
         .getPlanConflicts(navState.plan.plan_id)
         .then((res) => {
@@ -473,11 +473,7 @@ export const PlanReviewPage: React.FC = () => {
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 leading-tight">
               Block Plan Review & Validation
             </h1>
-            <Badge variant="blue" statusText="ALL PLANS" />
           </div>
-          <p className="text-xs text-slate-500 mt-1 font-medium">
-            Inspect scheduled AI block plans, operational timelines, hard constraints, and conflicts.
-          </p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -526,7 +522,7 @@ export const PlanReviewPage: React.FC = () => {
               <Card
                 key={p.plan_id}
                 title={
-                  <span className="font-mono text-xs font-bold text-blue-700">
+                  <span className="font-mono text-[15px] font-bold text-blue-700">
                     {p.plan_id}
                   </span>
                 }
@@ -546,7 +542,7 @@ export const PlanReviewPage: React.FC = () => {
                       variant="primary"
                       onClick={() => navigate(`/review/${p.plan_id}`)}
                       rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-                      className="text-xs"
+                      className="text-[15px]"
                     >
                       Inspect Plan Details
                     </Button>
@@ -554,31 +550,31 @@ export const PlanReviewPage: React.FC = () => {
                 }
               >
                 <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-slate-900 line-clamp-2">
+                  <h3 className="text-[16.5px] font-semibold text-slate-900 line-clamp-2">
                     {p.title}
                   </h3>
 
-                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs">
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-[15px]">
                     <div className="p-2 bg-slate-50 rounded-lg">
-                      <span className="block text-[10px] text-slate-400 uppercase font-semibold">
+                      <span className="block text-[11.5px] text-slate-400 uppercase font-semibold">
                         Optimization Score
                       </span>
-                      <span className="font-mono font-bold text-blue-600 text-sm">
+                      <span className="font-mono font-bold text-blue-600 text-[16.5px]">
                         {p.overall_score != null ? `${Number(p.overall_score).toFixed(1)}%` : '—'}
                       </span>
                     </div>
 
                     <div className="p-2 bg-slate-50 rounded-lg">
-                      <span className="block text-[10px] text-slate-400 uppercase font-semibold">
+                      <span className="block text-[11.5px] text-slate-400 uppercase font-semibold">
                         Scheduled Blocks
                       </span>
-                      <span className="font-mono font-bold text-slate-800 text-sm">
+                      <span className="font-mono font-bold text-slate-800 text-[16.5px]">
                         {itemCount} assignments
                       </span>
                     </div>
                   </div>
 
-                  <div className="text-[11px] text-slate-500 font-mono">
+                  <div className="text-[12.5px] text-slate-500 font-mono">
                     Strategy: <span className="font-semibold text-slate-700">{p.selected_strategy || 'Default'}</span>
                   </div>
                 </div>

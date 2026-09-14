@@ -70,20 +70,20 @@ export const PlanTimeline: React.FC<PlanTimelineProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-base font-bold text-slate-900">
+            <h2 className="text-[18.5px] font-bold text-slate-900">
               Operational Block Timeline
             </h2>
-            <span className="text-xs font-medium text-slate-400">
+            <span className="text-[15px] font-medium text-slate-400">
               (24-Hour Schedule Distribution)
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-[15px] text-slate-500 mt-0.5">
             Real time-slot placements rendered from engine start and end timestamps. Click any block to view full details.
           </p>
         </div>
 
         {/* Legend */}
-        <div className="flex flex-wrap items-center gap-3 text-xs">
+        <div className="flex flex-wrap items-center gap-3 text-[15px]">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-sm bg-blue-600"></span>
             <span className="text-slate-600 font-medium">Engineering</span>
@@ -108,14 +108,14 @@ export const PlanTimeline: React.FC<PlanTimelineProps> = ({
       </div>
 
       {items.length === 0 ? (
-        <div className="text-center py-10 text-slate-400 text-xs">
+        <div className="text-center py-10 text-slate-400 text-[15px]">
           No scheduled blocks to display on timeline.
         </div>
       ) : (
         <div className="overflow-x-auto pb-2">
           <div className="min-w-[780px]">
             {/* Time Axis (00:00 to 24:00) */}
-            <div className="grid grid-cols-12 text-[11px] font-mono text-slate-400 pb-2 border-b border-slate-200">
+            <div className="grid grid-cols-12 text-[12.5px] font-mono text-slate-400 pb-2 border-b border-slate-200">
               {hourTicks.slice(0, 12).map((h) => (
                 <div key={h} className="text-left pl-1 border-l border-slate-200 h-4">
                   {h.toString().padStart(2, '0')}:00
@@ -133,7 +133,7 @@ export const PlanTimeline: React.FC<PlanTimelineProps> = ({
 
                 return (
                   <div key={corridorId} className="space-y-2 p-3 bg-slate-50/50 rounded-xl border border-slate-200/60">
-                    <div className="flex items-center justify-between text-xs text-slate-500 font-medium px-1">
+                    <div className="flex items-center justify-between text-[15px] text-slate-500 font-medium px-1">
                       <span className="font-mono font-semibold text-slate-800">
                         {corridorId}
                       </span>
@@ -186,10 +186,10 @@ export const PlanTimeline: React.FC<PlanTimelineProps> = ({
                               start
                             )} - ${formatMinuteToTime(end)} (${formatDuration(duration)})`}
                           >
-                            <span className="text-[11px] font-mono font-bold truncate">
+                            <span className="text-[12.5px] font-mono font-bold truncate">
                               {block.request_id}
                             </span>
-                            <span className="text-[10px] opacity-90 truncate hidden md:inline">
+                            <span className="text-[11.5px] opacity-90 truncate hidden md:inline">
                               {formatMinuteToTime(start)}
                             </span>
                             {hasConflict && (
@@ -203,7 +203,7 @@ export const PlanTimeline: React.FC<PlanTimelineProps> = ({
                     {/* Operational Train Timetable Overlay Track */}
                     {corridorTrains.length > 0 && (
                       <div className="space-y-1 pt-1">
-                        <div className="flex items-center gap-1.5 text-[10px] font-mono text-slate-500 pl-1">
+                        <div className="flex items-center gap-1.5 text-[11.5px] font-mono text-slate-500 pl-1">
                           <span>🚆 Scheduled Trains ({corridorTrains.length} paths):</span>
                         </div>
                         <div className="relative h-6 bg-slate-100 border border-slate-200/80 rounded-lg overflow-hidden">
@@ -222,7 +222,7 @@ export const PlanTimeline: React.FC<PlanTimelineProps> = ({
                               <div
                                 key={tr.train_id}
                                 style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
-                                className="absolute top-1 bottom-1 rounded bg-slate-700 text-slate-100 px-1 text-[9px] font-mono flex items-center justify-between truncate shadow-2xs select-none"
+                                className="absolute top-1 bottom-1 rounded bg-slate-700 text-slate-100 px-1 text-[10.5px] font-mono flex items-center justify-between truncate shadow-2xs select-none"
                                 title={`Train ${tr.train_id} (${tr.train_type}) | ${formatMinuteToTime(
                                   tStart
                                 )} - ${formatMinuteToTime(tEnd)} | Priority: ${tr.priority_level}`}
@@ -245,7 +245,7 @@ export const PlanTimeline: React.FC<PlanTimelineProps> = ({
 
       {/* Hover Information Strip */}
       {hoveredBlock && (
-        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-[15px]">
           <div className="flex items-center gap-2">
             <span className="font-mono font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">
               {hoveredBlock.request_id}
