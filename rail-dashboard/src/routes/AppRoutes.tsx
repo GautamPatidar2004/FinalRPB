@@ -12,6 +12,7 @@ import {
   MonitoringPage,
   NotFoundPage,
 } from '../pages';
+import { TrainAIPage } from '../pages/TrainAIPage';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -27,6 +28,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="review" element={<PlanReviewPage />} />
         <Route path="review/:planId" element={<PlanReviewPage />} />
         <Route path="monitoring" element={<MonitoringPage />} />
+        <Route path="train-ai" element={<TrainAIPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -31,6 +31,7 @@ const NAV_ITEMS: NavItem[] = [
   { name: 'Block Planning', path: '/planning', icon: CalendarCheck2, description: 'AI-assisted generation' },
   { name: 'Plan Review', path: '/review', icon: FileCheck, description: 'Validation & approval' },
   { name: 'Monitoring', path: '/monitoring', icon: Activity, description: 'Live telemetry' },
+  { name: 'Train AI', path: '/train-ai', icon: Radio, description: 'AI Predictive Optimization & Advisories' },
 ];
 
 export const AppLayout: React.FC = () => {
