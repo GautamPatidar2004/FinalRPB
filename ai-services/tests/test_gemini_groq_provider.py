@@ -19,6 +19,7 @@ from explainability.providers import (
     DynamicProviderOrchestrator,
     GeminiProvider,
     GroqProvider,
+    OpenAIProvider,
 )
 from config.settings import settings
 
@@ -164,13 +165,18 @@ def test_groq_unavailable_gemini_fallback(mock_evidence):
 # 5. Both Unavailable -> Deterministic Fallback
 # -------------------------------------------------------------
 def test_both_unavailable_deterministic_fallback(mock_evidence):
-    gemini = GeminiProvider(api_key=settings.gemini_api_key)
+    gemini = GeminiProvider(api_key="fake-gemini")
     gemini.generate_explanation = MagicMock(side_effect=RuntimeError("Gemini down"))
 
-    groq = GroqProvider(api_key=settings.groq_api_key)
+    groq = GroqProvider(api_key="fake-groq")
     groq.generate_explanation = MagicMock(side_effect=RuntimeError("Groq down"))
 
-    orchestrator = DynamicProviderOrchestrator(gemini_provider=gemini, groq_provider=groq)
+    openai = OpenAIProvider(api_key="fake-openai")
+    openai.generate_explanation = MagicMock(side_effect=RuntimeError("OpenAI down"))
+
+    orchestrator = DynamicProviderOrchestrator(
+        gemini_provider=gemini, groq_provider=groq, openai_provider=openai
+    )
 
     narrative, meta = orchestrator.generate_narrative_explanation(mock_evidence)
 
@@ -227,11 +233,15 @@ def test_timeout_handling():
 # 9. Malformed LLM Response Handling
 # -------------------------------------------------------------
 def test_malformed_llm_response_handling(mock_evidence):
-    gemini = GeminiProvider(api_key=settings.gemini_api_key)
+    gemini = GeminiProvider(api_key="fake-gemini")
     # Returns invalid non-JSON output
     gemini.generate_explanation = MagicMock(side_effect=ValueError("Invalid JSON returned by model"))
+    groq = GroqProvider(enabled=False)
+    openai = OpenAIProvider(enabled=False)
 
-    orchestrator = DynamicProviderOrchestrator(gemini_provider=gemini)
+    orchestrator = DynamicProviderOrchestrator(
+        gemini_provider=gemini, groq_provider=groq, openai_provider=openai
+    )
     narrative, meta = orchestrator.generate_narrative_explanation(mock_evidence)
 
     assert meta.provider == "deterministic"
@@ -268,7 +278,10 @@ def test_provider_health_and_cooldown():
 def test_provider_telemetry_no_secrets():
     gemini = GeminiProvider(api_key=settings.gemini_api_key)
     groq = GroqProvider(api_key=settings.groq_api_key)
-    orchestrator = DynamicProviderOrchestrator(gemini_provider=gemini, groq_provider=groq)
+    openai = OpenAIProvider(api_key=settings.openai_api_key)
+    orchestrator = DynamicProviderOrchestrator(
+        gemini_provider=gemini, groq_provider=groq, openai_provider=openai
+    )
 
     status = orchestrator.get_providers_status()
     status_str = str(status)
@@ -277,8 +290,70 @@ def test_provider_telemetry_no_secrets():
         assert settings.gemini_api_key not in status_str
     if settings.groq_api_key:
         assert settings.groq_api_key not in status_str
+    if settings.openai_api_key:
+        assert settings.openai_api_key not in status_str
     assert "gemini" in status
     assert "groq" in status
+    assert "openai" in status
     assert "deterministic" in status
-    assert "model" in status["gemini"]
-    assert "status" in status["gemini"]
+    assert "model" in status["openai"]
+    assert "status" in status["openai"]
+
+
+# -------------------------------------------------------------
+# 13. OpenAI Available Success
+# -------------------------------------------------------------
+def test_openai_available_success(mock_evidence):
+    gemini = GeminiProvider(api_key="fake-gemini")
+    groq = GroqProvider(api_key="fake-groq")
+    openai = OpenAIProvider(api_key="sk-fake-openai-key")
+    openai.generate_explanation = MagicMock(return_value=_dummy_narrative("openai"))
+
+    orchestrator = DynamicProviderOrchestrator(
+        gemini_provider=gemini, groq_provider=groq, openai_provider=openai
+    )
+    with patch.object(settings, "llm_preferred_provider", "openai"):
+        narrative, meta = orchestrator.generate_narrative_explanation(mock_evidence)
+
+    assert meta.provider == "openai"
+    assert meta.fallback_used is False
+    assert "openai" in narrative.executive_summary
+    assert openai.generate_explanation.call_count == 1
+
+
+# -------------------------------------------------------------
+# 14. OpenAI Unavailable -> Gemini Fallback
+# -------------------------------------------------------------
+def test_openai_unavailable_gemini_fallback(mock_evidence):
+    gemini = GeminiProvider(api_key="fake-gemini")
+    gemini.generate_explanation = MagicMock(return_value=_dummy_narrative("gemini"))
+    groq = GroqProvider(api_key="fake-groq")
+    openai = OpenAIProvider(api_key="sk-fake-openai-key")
+    openai.generate_explanation = MagicMock(side_effect=RuntimeError("OpenAI 503 Overloaded"))
+
+    orchestrator = DynamicProviderOrchestrator(
+        gemini_provider=gemini, groq_provider=groq, openai_provider=openai
+    )
+    with patch.object(settings, "llm_preferred_provider", "openai"):
+        narrative, meta = orchestrator.generate_narrative_explanation(mock_evidence)
+
+    assert meta.provider == "gemini"
+    assert meta.fallback_used is True
+    assert "openai failed" in meta.fallback_reason.lower()
+    assert "gemini" in narrative.executive_summary
+    assert gemini.generate_explanation.call_count == 1
+
+
+# -------------------------------------------------------------
+# 15. OpenAI Budget and Error Handling
+# -------------------------------------------------------------
+def test_openai_budget_and_quota_state():
+    openai = OpenAIProvider(api_key="sk-test", budget=5)
+    openai.request_count = 5
+    assert openai.is_available() is False
+    assert openai.get_status() == ProviderHealthState.QUOTA_EXCEEDED
+
+    openai_unauthed = OpenAIProvider(api_key="")
+    assert openai_unauthed.is_available() is False
+    assert openai_unauthed.get_status() == ProviderHealthState.AUTH_FAILED
+

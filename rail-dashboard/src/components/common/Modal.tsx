@@ -27,8 +27,8 @@ export const Modal: React.FC<ModalProps> = ({
       <div className={`modal modal--${maxWidth}`} role="dialog" aria-modal="true">
         <div className="modal-header">
           <div>
-            <h3 className="modal-title">{title}</h3>
-            {subtitle && <p className="modal-subtitle">{subtitle}</p>}
+            <div className="modal-title">{title}</div>
+            {subtitle && <div className="modal-subtitle">{subtitle}</div>}
           </div>
           <button onClick={onClose} className="modal-close-btn" aria-label="Close dialog">
             <X size={16} />

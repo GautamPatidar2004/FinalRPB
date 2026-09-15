@@ -147,7 +147,8 @@ class ExplainabilityEngine:
 
         # 1. Try SHAP library if installed
         try:
-            import shap
+            import importlib
+            shap = importlib.import_module("shap")
             if model is not None:
                 explainer = shap.TreeExplainer(model)
                 shap_vals = explainer.shap_values(x_vec)

@@ -1,7 +1,9 @@
 import json
+import os
 import time
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from config.settings import settings
@@ -32,7 +34,12 @@ class BaseLLMProvider(ABC):
         if not self.enabled:
             return False
         if not self._has_credentials():
+            self.state = ProviderHealthState.AUTH_FAILED
             return False
+        elif self.state == ProviderHealthState.AUTH_FAILED:
+            # Credentials are now present; restore state to AVAILABLE
+            self.state = ProviderHealthState.AVAILABLE
+
         if self.request_count >= self.budget:
             self.state = ProviderHealthState.QUOTA_EXCEEDED
             return False
@@ -108,10 +115,29 @@ class GeminiProvider(BaseLLMProvider):
             timeout=timeout or settings.llm_timeout_seconds,
             budget=budget if budget is not None else settings.gemini_request_budget,
         )
-        self.api_key = api_key if api_key is not None else settings.gemini_api_key
+        self.api_key = api_key
+
+    def _get_api_key(self) -> str:
+        if self.api_key is not None:
+            return self.api_key.strip()
+        val = os.getenv("GEMINI_API_KEY")
+        if val and val.strip():
+            return val.strip()
+        if settings.gemini_api_key and settings.gemini_api_key.strip():
+            return settings.gemini_api_key.strip()
+        try:
+            from dotenv import dotenv_values
+            env_file = Path(__file__).resolve().parent.parent / ".env"
+            if env_file.exists():
+                v = dotenv_values(env_file).get("GEMINI_API_KEY")
+                if v and v.strip():
+                    return v.strip()
+        except Exception:
+            pass
+        return ""
 
     def _has_credentials(self) -> bool:
-        return bool(self.api_key and self.api_key.strip())
+        return bool(self._get_api_key())
 
     def health_check(self) -> Tuple[bool, ProviderHealthState, str]:
         if not self.enabled:
@@ -132,7 +158,8 @@ class GeminiProvider(BaseLLMProvider):
         try:
             from google import genai
             from google.genai import types
-            client = genai.Client(api_key=self.api_key)
+            key = self._get_api_key()
+            client = genai.Client(api_key=key)
             response = client.models.generate_content(
                 model=self.model,
                 contents=prompt,
@@ -167,10 +194,29 @@ class GroqProvider(BaseLLMProvider):
             timeout=timeout or settings.llm_timeout_seconds,
             budget=budget if budget is not None else settings.groq_request_budget,
         )
-        self.api_key = api_key if api_key is not None else settings.groq_api_key
+        self.api_key = api_key
+
+    def _get_api_key(self) -> str:
+        if self.api_key is not None:
+            return self.api_key.strip()
+        val = os.getenv("GROQ_API_KEY")
+        if val and val.strip():
+            return val.strip()
+        if settings.groq_api_key and settings.groq_api_key.strip():
+            return settings.groq_api_key.strip()
+        try:
+            from dotenv import dotenv_values
+            env_file = Path(__file__).resolve().parent.parent / ".env"
+            if env_file.exists():
+                v = dotenv_values(env_file).get("GROQ_API_KEY")
+                if v and v.strip():
+                    return v.strip()
+        except Exception:
+            pass
+        return ""
 
     def _has_credentials(self) -> bool:
-        return bool(self.api_key and self.api_key.strip())
+        return bool(self._get_api_key())
 
     def health_check(self) -> Tuple[bool, ProviderHealthState, str]:
         if not self.enabled:
@@ -190,7 +236,8 @@ class GroqProvider(BaseLLMProvider):
 
         try:
             from groq import Groq
-            client = Groq(api_key=self.api_key, timeout=self.timeout)
+            key = self._get_api_key()
+            client = Groq(api_key=key, timeout=self.timeout)
             completion = client.chat.completions.create(
                 model=self.model,
                 messages=[
@@ -206,6 +253,120 @@ class GroqProvider(BaseLLMProvider):
             raw_text = completion.choices[0].message.content
             parsed = json.loads(raw_text)
             return NarrativeExplanation.model_validate(parsed)
+        except Exception as exc:
+            self.handle_provider_error(exc)
+            raise exc
+
+
+class OpenAIProvider(BaseLLMProvider):
+    """OpenAI LLM provider implementation (e.g. GPT-4o, GPT-4o-mini)."""
+
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        model: Optional[str] = None,
+        enabled: Optional[bool] = None,
+        timeout: Optional[float] = None,
+        budget: Optional[int] = None,
+    ):
+        super().__init__(
+            name="openai",
+            model=model or settings.openai_model,
+            enabled=enabled if enabled is not None else settings.openai_enabled,
+            timeout=timeout or settings.llm_timeout_seconds,
+            budget=budget if budget is not None else settings.openai_request_budget,
+        )
+        self.api_key = api_key
+
+    def _get_api_key(self) -> str:
+        if self.api_key is not None:
+            return self.api_key.strip()
+        val = os.getenv("OPENAI_API_KEY")
+        if val and val.strip():
+            return val.strip()
+        if settings.openai_api_key and settings.openai_api_key.strip():
+            return settings.openai_api_key.strip()
+        try:
+            from dotenv import dotenv_values
+            env_file = Path(__file__).resolve().parent.parent / ".env"
+            if env_file.exists():
+                v = dotenv_values(env_file).get("OPENAI_API_KEY")
+                if v and v.strip():
+                    return v.strip()
+        except Exception:
+            pass
+        return ""
+
+    def _has_credentials(self) -> bool:
+        return bool(self._get_api_key())
+
+    def health_check(self) -> Tuple[bool, ProviderHealthState, str]:
+        if not self.enabled:
+            return False, ProviderHealthState.DISABLED, "OpenAI provider is disabled in settings."
+        if not self._has_credentials():
+            return False, ProviderHealthState.AUTH_FAILED, "OpenAI API key is not configured."
+        if self.request_count >= self.budget:
+            return False, ProviderHealthState.QUOTA_EXCEEDED, "OpenAI configured budget reached."
+        return True, ProviderHealthState.AVAILABLE, "OpenAI provider ready."
+
+    def generate_explanation(self, evidence: Dict[str, Any]) -> NarrativeExplanation:
+        if not self.is_available():
+            raise RuntimeError(f"OpenAI provider unavailable (status: {self.get_status().value})")
+
+        prompt = _build_grounded_prompt(evidence)
+        self.request_count += 1
+        key = self._get_api_key()
+
+        try:
+            # 1. Try official openai library if installed
+            try:
+                import openai
+                client = openai.OpenAI(api_key=key, timeout=self.timeout)
+                completion = client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": "You are a specialized Railway Operations Planning Assistant. Output valid JSON strictly matching the requested schema.",
+                        },
+                        {"role": "user", "content": prompt},
+                    ],
+                    response_format={"type": "json_object"},
+                    temperature=0.2,
+                )
+                raw_text = completion.choices[0].message.content
+                parsed = json.loads(raw_text)
+                return NarrativeExplanation.model_validate(parsed)
+            except ImportError:
+                # 2. Standard httpx client fallback
+                import httpx
+                headers = {
+                    "Authorization": f"Bearer {key}",
+                    "Content-Type": "application/json",
+                }
+                payload = {
+                    "model": self.model,
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "You are a specialized Railway Operations Planning Assistant. Output valid JSON strictly matching the requested schema.",
+                        },
+                        {"role": "user", "content": prompt},
+                    ],
+                    "response_format": {"type": "json_object"},
+                    "temperature": 0.2,
+                }
+                with httpx.Client(timeout=self.timeout) as http_client:
+                    resp = http_client.post(
+                        "https://api.openai.com/v1/chat/completions",
+                        headers=headers,
+                        json=payload,
+                    )
+                    resp.raise_for_status()
+                    data = resp.json()
+                    raw_text = data["choices"][0]["message"]["content"]
+                    parsed = json.loads(raw_text)
+                    return NarrativeExplanation.model_validate(parsed)
         except Exception as exc:
             self.handle_provider_error(exc)
             raise exc
@@ -288,16 +449,19 @@ class DynamicProviderOrchestrator:
     """
     Intelligent LLM provider orchestrator with health probes, budget tracking,
     lightweight state cooldowns, and automatic deterministic failover.
+    Supports Gemini, Groq, and OpenAI dynamically.
     """
 
     def __init__(
         self,
         gemini_provider: Optional[GeminiProvider] = None,
         groq_provider: Optional[GroqProvider] = None,
+        openai_provider: Optional[OpenAIProvider] = None,
         deterministic_provider: Optional[DeterministicExplanationProvider] = None,
     ):
         self.gemini = gemini_provider or GeminiProvider()
         self.groq = groq_provider or GroqProvider()
+        self.openai = openai_provider or OpenAIProvider()
         self.deterministic = deterministic_provider or DeterministicExplanationProvider()
 
     def get_providers_status(self) -> Dict[str, Any]:
@@ -325,6 +489,16 @@ class DynamicProviderOrchestrator:
                 "budget": self.groq.budget,
                 "last_error": self.groq.last_error_message,
             },
+            "openai": {
+                "name": "openai",
+                "model": self.openai.model,
+                "enabled": self.openai.enabled,
+                "status": self.openai.get_status().value,
+                "is_available": self.openai.is_available(),
+                "request_count": self.openai.request_count,
+                "budget": self.openai.budget,
+                "last_error": self.openai.last_error_message,
+            },
             "deterministic": {
                 "name": "deterministic",
                 "status": "AVAILABLE",
@@ -338,68 +512,62 @@ class DynamicProviderOrchestrator:
     ) -> Tuple[NarrativeExplanation, ProviderMetadata]:
         """
         Executes provider selection with priority:
-        Preferred Available Provider -> Fallback Provider -> Deterministic Engine
+        Preferred Available Provider -> Fallback Providers (in order) -> Deterministic Engine
         """
         start_time = time.time()
         now_iso = datetime.now(timezone.utc).isoformat()
 
-        preferred = self.gemini if settings.llm_preferred_provider == "gemini" else self.groq
-        secondary = self.groq if settings.llm_preferred_provider == "gemini" else self.gemini
+        all_providers: Dict[str, BaseLLMProvider] = {
+            "gemini": self.gemini,
+            "groq": self.groq,
+            "openai": self.openai,
+        }
+
+        pref_key = (settings.llm_preferred_provider or "gemini").lower()
+        preferred = all_providers.get(pref_key, self.gemini)
+
+        # Candidates in order: preferred first, then remaining enabled providers
+        candidates: List[BaseLLMProvider] = [preferred]
+        if settings.llm_fallback_enabled:
+            for k, p in all_providers.items():
+                if p != preferred:
+                    candidates.append(p)
 
         fallback_used = False
-        fallback_reason = None
+        failure_reasons = []
 
-        # 1. Try Preferred Provider
-        if preferred.is_available():
-            try:
-                narrative = self._call_with_retry(preferred, evidence)
-                latency = round((time.time() - start_time) * 1000, 2)
-                return narrative, ProviderMetadata(
-                    provider=preferred.name,
-                    provider_status=preferred.get_status(),
-                    fallback_used=False,
-                    model=preferred.model,
-                    request_timestamp=now_iso,
-                    latency_ms=latency,
-                )
-            except Exception as err:
+        for idx, provider in enumerate(candidates):
+            if provider.is_available():
+                try:
+                    narrative = self._call_with_retry(provider, evidence)
+                    latency = round((time.time() - start_time) * 1000, 2)
+                    is_fb = (idx > 0)
+                    fb_reason = "; ".join(failure_reasons) if is_fb else None
+                    return narrative, ProviderMetadata(
+                        provider=provider.name,
+                        provider_status=provider.get_status(),
+                        fallback_used=is_fb,
+                        fallback_reason=fb_reason,
+                        model=provider.model,
+                        request_timestamp=now_iso,
+                        latency_ms=latency,
+                    )
+                except Exception as err:
+                    fallback_used = True
+                    failure_reasons.append(f"{provider.name} failed ({str(err)})")
+            elif provider.enabled:
                 fallback_used = True
-                fallback_reason = f"{preferred.name} failed ({str(err)})"
+                failure_reasons.append(f"{provider.name} not eligible (status: {provider.get_status().value})")
 
-        elif preferred.enabled:
-            fallback_used = True
-            fallback_reason = f"{preferred.name} not eligible (status: {preferred.get_status().value})"
-
-        # 2. Try Secondary Provider if fallback enabled
-        if settings.llm_fallback_enabled and secondary.is_available():
-            try:
-                narrative = self._call_with_retry(secondary, evidence)
-                latency = round((time.time() - start_time) * 1000, 2)
-                return narrative, ProviderMetadata(
-                    provider=secondary.name,
-                    provider_status=secondary.get_status(),
-                    fallback_used=True,
-                    fallback_reason=fallback_reason or f"Fell back to {secondary.name}",
-                    model=secondary.model,
-                    request_timestamp=now_iso,
-                    latency_ms=latency,
-                )
-            except Exception as err:
-                fallback_used = True
-                fallback_reason = f"Both {preferred.name} and {secondary.name} failed ({str(err)})"
-
-        elif settings.llm_fallback_enabled and secondary.enabled and not fallback_reason:
-            fallback_used = True
-            fallback_reason = f"{secondary.name} not eligible (status: {secondary.get_status().value})"
-
-        # 3. Deterministic Grounded Narrative Fallback
+        # Deterministic Grounded Narrative Fallback
         narrative = self.deterministic.generate_explanation(evidence)
         latency = round((time.time() - start_time) * 1000, 2)
+        fb_reason = "; ".join(failure_reasons) if failure_reasons else "All external LLM providers unavailable or unconfigured"
         return narrative, ProviderMetadata(
             provider="deterministic",
             provider_status=ProviderHealthState.AVAILABLE,
-            fallback_used=fallback_used or (preferred.name != "deterministic"),
-            fallback_reason=fallback_reason or "All external LLM providers unavailable or unconfigured",
+            fallback_used=True,
+            fallback_reason=fb_reason,
             model="deterministic-rule-engine",
             request_timestamp=now_iso,
             latency_ms=latency,

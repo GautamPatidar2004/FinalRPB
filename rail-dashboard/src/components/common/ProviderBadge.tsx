@@ -28,20 +28,25 @@ export const ProviderBadge: React.FC<ProviderBadgeProps> = ({
   const provider = metadata.provider.toLowerCase();
   const isGemini = provider.includes('gemini');
   const isGroq = provider.includes('groq');
+  const isOpenAI = provider.includes('openai');
 
-  const providerLabel = isGemini ? 'Gemini' : isGroq ? 'Groq' : 'Deterministic';
+  const providerLabel = isGemini ? 'Gemini' : isGroq ? 'Groq' : isOpenAI ? 'OpenAI' : 'Deterministic';
 
   // Badge theme colors
   const themeClasses = isGemini
     ? 'bg-blue-50 text-blue-700 border-blue-200'
     : isGroq
     ? 'bg-orange-50 text-orange-700 border-orange-200'
+    : isOpenAI
+    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
     : 'bg-slate-100 text-slate-700 border-slate-200';
 
   const icon = isGemini ? (
     <Sparkles className="w-3.5 h-3.5 text-blue-600 shrink-0" />
   ) : isGroq ? (
     <Bot className="w-3.5 h-3.5 text-orange-600 shrink-0" />
+  ) : isOpenAI ? (
+    <Sparkles className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
   ) : (
     <Cpu className="w-3.5 h-3.5 text-slate-600 shrink-0" />
   );

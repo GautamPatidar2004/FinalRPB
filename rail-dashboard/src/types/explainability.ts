@@ -142,6 +142,7 @@ export interface ProviderStatusDetail {
 export interface ProvidersStatusResponse {
   gemini: ProviderStatusDetail;
   groq: ProviderStatusDetail;
+  openai?: ProviderStatusDetail;
   deterministic: ProviderStatusDetail;
   preferred_provider: string;
   fallback_enabled: boolean;

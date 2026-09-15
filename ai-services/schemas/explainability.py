@@ -15,7 +15,7 @@ class ProviderHealthState(str, Enum):
 
 class ProviderMetadata(BaseModel):
     """Execution telemetry and health status of the explanation provider."""
-    provider: str = Field(..., description="gemini, groq, or deterministic")
+    provider: str = Field(..., description="gemini, groq, openai, or deterministic")
     provider_status: ProviderHealthState
     fallback_used: bool = False
     fallback_reason: Optional[str] = None

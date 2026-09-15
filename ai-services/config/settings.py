@@ -25,8 +25,8 @@ class Settings(BaseSettings):
     model_artifact_path: str = "models/artifacts/priority_model.joblib"
     training_csv_path: str = "data/training/historical_maintenance.csv"
 
-    # LLM Dynamic Provider Settings (Gemini + Groq)
-    llm_preferred_provider: str = Field(default="gemini", description="gemini or groq")
+    # LLM Dynamic Provider Settings (Gemini, Groq, OpenAI)
+    llm_preferred_provider: str = Field(default="gemini", description="gemini, groq, or openai")
     llm_fallback_enabled: bool = True
     llm_timeout_seconds: float = 10.0
     llm_retry_limit: int = 1
@@ -41,6 +41,11 @@ class Settings(BaseSettings):
     groq_model: str = "llama-3.3-70b-versatile"
     groq_enabled: bool = True
     groq_request_budget: int = 1000
+
+    openai_api_key: Optional[str] = None
+    openai_model: str = "gpt-4o-mini"
+    openai_enabled: bool = True
+    openai_request_budget: int = 1000
 
     model_config = SettingsConfigDict(
         env_file=(

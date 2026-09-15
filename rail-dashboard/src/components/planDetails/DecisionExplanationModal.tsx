@@ -204,11 +204,10 @@ export const DecisionExplanationModal: React.FC<DecisionExplanationModalProps> =
           <button
             type="button"
             onClick={() => setActiveTab('overview')}
-            className={`px-3 py-2 font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === 'overview'
-                ? 'border-blue-600 text-blue-700'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
+            className={`px-3 py-2 font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'overview'
+              ? 'border-blue-600 text-blue-700'
+              : 'border-transparent text-slate-600 hover:text-slate-900'
+              }`}
           >
             <Sparkles className="w-4 h-4" />
             <span>AI Narrative</span>
@@ -216,11 +215,10 @@ export const DecisionExplanationModal: React.FC<DecisionExplanationModalProps> =
           <button
             type="button"
             onClick={() => setActiveTab('rationale')}
-            className={`px-3 py-2 font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === 'rationale'
-                ? 'border-blue-600 text-blue-700'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
+            className={`px-3 py-2 font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'rationale'
+              ? 'border-blue-600 text-blue-700'
+              : 'border-transparent text-slate-600 hover:text-slate-900'
+              }`}
           >
             <Info className="w-4 h-4" />
             <span>Decision Reasons</span>
@@ -228,11 +226,10 @@ export const DecisionExplanationModal: React.FC<DecisionExplanationModalProps> =
           <button
             type="button"
             onClick={() => setActiveTab('factors')}
-            className={`px-3 py-2 font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === 'factors'
-                ? 'border-blue-600 text-blue-700'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
+            className={`px-3 py-2 font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'factors'
+              ? 'border-blue-600 text-blue-700'
+              : 'border-transparent text-slate-600 hover:text-slate-900'
+              }`}
           >
             <BarChart2 className="w-4 h-4" />
             <span>SHAP Factors</span>
@@ -240,11 +237,10 @@ export const DecisionExplanationModal: React.FC<DecisionExplanationModalProps> =
           <button
             type="button"
             onClick={() => setActiveTab('trace')}
-            className={`px-3 py-2 font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === 'trace'
-                ? 'border-blue-600 text-blue-700'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
+            className={`px-3 py-2 font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'trace'
+              ? 'border-blue-600 text-blue-700'
+              : 'border-transparent text-slate-600 hover:text-slate-900'
+              }`}
           >
             <GitCommit className="w-4 h-4" />
             <span>Decision Trace</span>
@@ -252,11 +248,10 @@ export const DecisionExplanationModal: React.FC<DecisionExplanationModalProps> =
           <button
             type="button"
             onClick={() => setActiveTab('constraints')}
-            className={`px-3 py-2 font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === 'constraints'
-                ? 'border-blue-600 text-blue-700'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
+            className={`px-3 py-2 font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'constraints'
+              ? 'border-blue-600 text-blue-700'
+              : 'border-transparent text-slate-600 hover:text-slate-900'
+              }`}
           >
             <ShieldCheck className="w-4 h-4" />
             <span>Constraints</span>
@@ -264,11 +259,10 @@ export const DecisionExplanationModal: React.FC<DecisionExplanationModalProps> =
           <button
             type="button"
             onClick={() => setActiveTab('scoring')}
-            className={`px-3 py-2 font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === 'scoring'
-                ? 'border-blue-600 text-blue-700'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
+            className={`px-3 py-2 font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'scoring'
+              ? 'border-blue-600 text-blue-700'
+              : 'border-transparent text-slate-600 hover:text-slate-900'
+              }`}
           >
             <Sliders className="w-4 h-4" />
             <span>Score Breakdown</span>
@@ -306,11 +300,11 @@ export const DecisionExplanationModal: React.FC<DecisionExplanationModalProps> =
                     <span className="font-bold text-slate-700 flex items-center gap-2">
                       <ProviderBadge metadata={providerMeta} />
                     </span>
-                    {providerMeta?.fallback_used && (
+                    {/* {providerMeta?.fallback_used && (
                       <span className="text-[12px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
                         {providerMeta.fallback_reason || 'Fallback provider activated'}
                       </span>
-                    )}
+                    )} */}
                   </div>
                   {providerMeta?.provider === 'deterministic' && (
                     <div className="flex items-center gap-2 text-[12px] text-amber-800 bg-amber-50/70 p-2 rounded-lg border border-amber-200">
@@ -523,11 +517,10 @@ export const DecisionExplanationModal: React.FC<DecisionExplanationModalProps> =
                   targetConstraints.map((c, i) => (
                     <div
                       key={i}
-                      className={`p-3 rounded-xl border text-[13px] space-y-1.5 ${
-                        c.passed
-                          ? 'bg-emerald-50/40 border-emerald-200 text-slate-800'
-                          : 'bg-red-50/50 border-red-200 text-red-900'
-                      }`}
+                      className={`p-3 rounded-xl border text-[13px] space-y-1.5 ${c.passed
+                        ? 'bg-emerald-50/40 border-emerald-200 text-slate-800'
+                        : 'bg-red-50/50 border-red-200 text-red-900'
+                        }`}
                     >
                       <div className="flex items-center justify-between">
                         <span className="font-mono font-bold text-[12.5px] flex items-center gap-1.5">
@@ -641,11 +634,10 @@ export const DecisionExplanationModal: React.FC<DecisionExplanationModalProps> =
                         {explanation.optimizer_decisions.candidates_evaluated.map((c, i) => (
                           <div
                             key={i}
-                            className={`p-2.5 rounded-lg border flex items-center justify-between text-[12.5px] ${
-                              c.is_selected
-                                ? 'bg-blue-50 border-blue-300 font-bold text-blue-900'
-                                : 'bg-white border-slate-200 text-slate-700'
-                            }`}
+                            className={`p-2.5 rounded-lg border flex items-center justify-between text-[12.5px] ${c.is_selected
+                              ? 'bg-blue-50 border-blue-300 font-bold text-blue-900'
+                              : 'bg-white border-slate-200 text-slate-700'
+                              }`}
                           >
                             <span className="font-mono">{c.strategy_name}</span>
                             <div className="flex items-center gap-3">
